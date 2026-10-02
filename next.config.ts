@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "**" },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/blog/:slug*',
+        destination: '/article/:slug*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
