@@ -11,7 +11,7 @@ export async function getSiteSettings(): Promise<ISetting> {
   const defaultSettings: ISetting = {
     siteName: 'Spotlight',
     description: 'Spotlight is a premier digital publication delivering curated reporting, insightful commentary, and captivating coverage across Entertainment, Sports, and Comedy.',
-    email: 'editorial@spotlightmedia.com',
+    email: 'qbinhtkcongviec@gmail.com',
     defaultMetaTitle: 'Spotlight - Entertainment, Sports & Comedy Magazine',
     defaultMetaDescription: 'Read the latest in entertainment news, sports reporting, and comedic commentary on Spotlight.',
     ogImage: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&h=630&q=80',
@@ -43,7 +43,7 @@ export async function getActiveCategories(): Promise<ICategory[]> {
   try {
     const conn = await connectDB();
     if (!conn) return [];
-    const categories = await Category.find({ isActive: true })
+    const categories = await Category.find({ isActive: { $ne: false } })
       .sort({ sortOrder: 1, name: 1 })
       .lean();
     return JSON.parse(JSON.stringify(categories));

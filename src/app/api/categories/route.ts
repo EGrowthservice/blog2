@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const all = searchParams.get('all') === 'true';
 
-    const filter = all ? {} : { isActive: true };
+    const filter = all ? {} : { isActive: { $ne: false } };
     const categories = await Category.find(filter).sort({ sortOrder: 1, name: 1 }).lean();
 
     // Calculate article counts per category
@@ -26,7 +26,9 @@ export async function GET(req: NextRequest) {
 
     const countMap = new Map();
     counts.forEach((c) => {
-      countMap.set(c._id.toString(), c.count);
+      if (c && c._id) {
+        countMap.set(c._id.toString(), c.count);
+      }
     });
 
     const categoriesWithCount = categories.map((cat) => ({

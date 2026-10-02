@@ -1,36 +1,37 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { Film, Trophy, Laugh, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
+import { Film, Trophy, Music, Tv, Mail, ShieldCheck } from 'lucide-react';
 import { getSiteSettings } from '@/lib/data';
 
 export const metadata: Metadata = {
-  title: 'About Spotlight - Entertainment, Sports & Comedy Editorial Mission',
-  description: 'Discover Spotlight’s editorial standards, journalistic integrity, and comprehensive coverage across Entertainment, Sports, and Comedy.',
+  title: 'About Us - Spotlight',
+  description: 'Learn more about Spotlight, our editorial mission, coverage of cinema, music, television, and sports, and how to get in touch.',
 };
 
 export default async function AboutPage() {
   const settings = await getSiteSettings();
 
-  const values = [
+  const editorialPillars = [
     {
       icon: Film,
-      title: 'Cultural Pulse & Cinema',
-      description: 'We bring sharp critique, exclusive festival coverage, and nuanced reporting on cinema, television, and streaming media.',
+      title: 'Movies & Cinema',
+      description: 'Reviews, box office analysis, and thoughtful critiques of contemporary cinema and indie releases.',
+    },
+    {
+      icon: Tv,
+      title: 'Prestige TV & Streaming',
+      description: 'In-depth coverage of top series, season breakdowns, streaming platform trends, and industry shifts.',
+    },
+    {
+      icon: Music,
+      title: 'Music & Culture',
+      description: 'Spotlighting album releases, artist retrospectives, sound design, and live event retrospectives.',
     },
     {
       icon: Trophy,
-      title: 'Athletic Depth & Analysis',
-      description: 'Beyond box scores, we break down tactical strategies, player legacies, and tournament narratives across major global sports.',
-    },
-    {
-      icon: Laugh,
-      title: 'Witty Commentary & Comedy',
-      description: 'From stand-up retrospectives to insightful satire, we explore the cultural power of humor and comedy craft.',
-    },
-    {
-      icon: ShieldCheck,
-      title: 'Editorial Standards & Verification',
-      description: 'Every reported event, quote, and sports statistic is verified against primary sources, official league records, and public press archives.',
+      title: 'Sports Coverage',
+      description: 'Analytical perspectives, match narratives, tactical breakthroughs, and tournament highlights.',
     },
   ];
 
@@ -39,7 +40,7 @@ export default async function AboutPage() {
       {/* Hero */}
       <div className="text-center space-y-4">
         <span className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider">
-          Editorial Mission
+          Independent Publication
         </span>
         <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight">
           About {settings.siteName}
@@ -51,46 +52,68 @@ export default async function AboutPage() {
 
       {/* Narrative Section */}
       <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-xs space-y-6 text-slate-700 leading-relaxed text-base sm:text-lg">
-        <h2 className="text-2xl font-bold text-slate-900">Illuminating Pop Culture, Athletic Feats & Comedy</h2>
+        <h2 className="text-2xl font-bold text-slate-900">Our Editorial Mission</h2>
         <p>
-          Founded in 2026, <strong>{settings.siteName}</strong> is dedicated to celebrating and analyzing three essential pillars of modern culture: <strong>Entertainment</strong>, <strong>Sports</strong>, and <strong>Comedy</strong>.
+          Welcome to <strong>{settings.siteName}</strong> — an independent digital news and review blog dedicated to sharing clear, curated, and engaging coverage across entertainment, television, music, and sports.
         </p>
         <p>
-          In an era of relentless algorithmic feeds and superficial snippets, Spotlight provides thoughtful journalism, lively commentary, and rich multimedia stories. Whether exploring the theatrical evolution of film, analyzing championship sports matches, or spotlighting trailblazing stand-up comedians, our platform delivers journalism that entertains and informs.
+          We aim to provide a clean, distraction-free reading experience. Our focus is straightforward: well-written stories, thoughtful critiques, and timely updates without excessive clutter or sensationalism.
         </p>
 
         <div className="relative aspect-[21/9] w-full rounded-2xl overflow-hidden my-8">
           <Image
             src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80"
-            alt="Spotlight Editorial Production"
+            alt="Spotlight Editorial Perspective"
             fill
             className="object-cover"
           />
         </div>
 
-        <h3 className="text-xl font-bold text-slate-900">Editorial Independence & Transparency</h3>
+        <h3 className="text-xl font-bold text-slate-900">Community & Discussion</h3>
         <p>
-          Our editorial desk operates with strict journalistic independence. Programmatic advertising, commercial partnerships, and creative sponsorships are strictly separated from our editorial judgments and never dictate our reviews, sports coverage, or critical opinions.
+          We believe in open conversation. Readers are welcome to join discussions by commenting on our articles or reporting inappropriate content directly without requiring account registration. We strive to maintain a constructive and respectful community environment.
         </p>
       </div>
 
-      {/* Values Grid */}
+      {/* Topics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {values.map((val) => {
-          const Icon = val.icon;
+        {editorialPillars.map((pillar) => {
+          const Icon = pillar.icon;
           return (
             <div
-              key={val.title}
+              key={pillar.title}
               className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/80 shadow-xs space-y-3"
             >
               <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                 <Icon className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">{val.title}</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">{val.description}</p>
+              <h3 className="text-lg font-bold text-slate-900">{pillar.title}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{pillar.description}</p>
             </div>
           );
         })}
+      </div>
+
+      {/* Direct Contact Card */}
+      <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="space-y-2 text-center sm:text-left">
+          <div className="inline-flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
+            <Mail className="w-4 h-4" /> Get in Touch
+          </div>
+          <h3 className="text-2xl font-bold">Have feedback, news tips, or a story inquiry?</h3>
+          <p className="text-slate-400 text-sm max-w-md">
+            Reach out directly to our editorial mailbox at{' '}
+            <a href="mailto:qbinhtkcongviec@gmail.com" className="text-white underline font-semibold">
+              qbinhtkcongviec@gmail.com
+            </a>
+          </p>
+        </div>
+        <Link
+          href="/contact"
+          className="inline-flex items-center justify-center px-6 py-3 bg-white text-slate-900 hover:bg-slate-100 rounded-xl font-bold text-sm transition-colors whitespace-nowrap shadow-sm"
+        >
+          Contact Us
+        </Link>
       </div>
     </div>
   );

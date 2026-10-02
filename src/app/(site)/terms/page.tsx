@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Terms of Service - Spotlight',
-  description: 'Binding Terms of Service, editorial licensing, DMCA (17 U.S.C. § 512) copyright procedures, and acceptable use policy for Spotlight.',
+  description: 'Terms of Service governing the use of Spotlight, reader commentary guidelines, content copyrights, and contact procedures.',
 };
 
 export default function TermsPage() {
@@ -12,155 +12,131 @@ export default function TermsPage() {
       {/* Header */}
       <div className="border-b border-slate-200 pb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold uppercase tracking-wider mb-4">
-          Binding Legal Agreement
+          Site Guidelines & Agreement
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
           Terms of Service
         </h1>
         <p className="text-sm text-slate-500 mt-3">
-          Effective Date: September 30, 2026 | Last Audited: September 30, 2026
+          Last Updated: October 2026
         </p>
       </div>
 
       <div className="bg-white rounded-3xl p-8 sm:p-14 border border-slate-200/80 shadow-xs space-y-10 text-slate-700 leading-relaxed text-sm sm:text-base">
-        {/* Section 1 */}
+        {/* Acceptance */}
         <section className="space-y-4">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            1. Acceptance of Terms & Legal Capacity
+            1. Acceptance of Terms
           </h2>
           <p>
-            These Terms of Service (&ldquo;Terms&rdquo;) constitute a legally binding agreement between you (&ldquo;User&rdquo;, &ldquo;you&rdquo;) and <strong>Spotlight</strong> (&ldquo;Spotlight&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;), regulating your access to and use of Spotlight&apos;s digital publications, domain, content, feeds, and interactive features.
-          </p>
-          <p>
-            By accessing or browsing this website, you warrant and represent that you are at least 16 years of age (or have reached the age of majority in your jurisdiction) and possess the legal capacity to enter into these binding terms. If you do not agree to these Terms, you must discontinue use immediately.
+            By accessing or using <strong>Spotlight</strong> (&ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our website&rdquo;), you agree to comply with and be bound by these Terms of Service. If you do not agree with any part of these terms, please discontinue browsing our site.
           </p>
         </section>
 
-        {/* Section 2 */}
+        {/* Content & Intellectual Property */}
         <section className="space-y-4">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            2. Intellectual Property, Copyright & Fair Use
+            2. Intellectual Property & Content Use
           </h2>
           <p>
-            All original editorial essays, critical reviews, headline curation, typography, source code, logos, and graphics published on Spotlight are the proprietary property of Spotlight or licensed to us by respective copyright holders, protected by international copyright laws and treaties.
+            All original articles, editorial reviews, summaries, logos, and website design elements published on Spotlight are protected by copyright laws.
           </p>
-          <ul className="list-disc pl-6 space-y-2">
+          <ul className="list-disc pl-6 space-y-1.5">
             <li>
-              <strong>Permitted Personal Use:</strong> You are granted a revocable, non-exclusive, non-transferable license to access, view, and read content solely for personal, non-commercial purposes.
+              <strong>Personal Use:</strong> You are welcome to read, bookmark, and share links to our articles for personal, non-commercial purposes.
             </li>
             <li>
-              <strong>Fair Use & Quotation (17 U.S.C. § 107):</strong> Journalists, educators, and commentators may quote brief excerpts (up to 75 words) of Spotlight articles provided that clear attribution and a direct dofollow hyperlink to the original article URL are maintained.
+              <strong>Fair Quotation:</strong> Brief excerpts of our articles may be quoted by other writers, researchers, or news outlets provided that proper credit and a direct hyperlink to the original article on Spotlight are visibly included.
             </li>
             <li>
-              <strong>Prohibited Conduct:</strong> You may not republish full-text articles, syndicate feeds without prior written consent, frame our pages, or scrape editorial assets for commercial distribution or generative model training without explicit licensing agreements.
+              <strong>Unauthorized Reproduction:</strong> Scraping, automated copying, or republishing entire articles without prior permission is prohibited.
             </li>
           </ul>
         </section>
 
-        {/* Section 3 - DMCA */}
+        {/* Comments and Community Guidelines */}
         <section className="space-y-4">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            3. Copyright Infringement & DMCA Notice-and-Takedown Procedure
+            3. Reader Comments & Community Guidelines
           </h2>
           <p>
-            Spotlight respects the intellectual property rights of creators. In accordance with the <strong>Digital Millennium Copyright Act of 1998 (17 U.S.C. § 512)</strong>, we maintain a designated copyright agent to receive and process formal infringement notifications.
+            Spotlight allows readers to post comments and feedback without requiring an account. To keep discussions helpful and respectful, you agree not to post:
           </p>
+          <ul className="list-disc pl-6 space-y-1.5">
+            <li>Defamatory, abusive, harassing, threatening, or hateful content.</li>
+            <li>Unsolicited commercial advertisements, spam, affiliate links, or repetitive postings.</li>
+            <li>Malicious code, phishing links, or unauthorized disclosures of personal private information.</li>
+            <li>Content that infringes upon the intellectual property or privacy rights of any third party.</li>
+          </ul>
           <p>
-            To submit an effective DMCA Notice of Infringement pursuant to 17 U.S.C. § 512(c)(3), your written communication must include:
+            We reserve the right to review, edit, moderate, or remove any comment at our sole discretion, as well as take action on reader reports submitted through our site.
           </p>
-          <ol className="list-decimal pl-6 space-y-1.5 text-xs sm:text-sm">
-            <li>A physical or electronic signature of a person authorized to act on behalf of the copyright owner.</li>
-            <li>Specific identification of the copyrighted work claimed to have been infringed, or a representative list of works.</li>
-            <li>Identification of the material that is claimed to be infringing and information reasonably sufficient to permit Spotlight to locate the material (exact URL on Spotlight).</li>
-            <li>Information reasonably sufficient to permit us to contact you, such as address, telephone number, and email.</li>
-            <li>A statement that you have a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law.</li>
-            <li>A statement that the information in the notification is accurate, and under penalty of perjury, that you are authorized to act on behalf of the copyright owner.</li>
-          </ol>
+        </section>
+
+        {/* Copyright and DMCA */}
+        <section className="space-y-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            4. Copyright Inquiries & Takedown Requests
+          </h2>
+          <p>
+            We respect the intellectual property of artists, filmmakers, writers, and photographers. If you believe that any image, text, or material published on Spotlight infringes upon your copyright, please notify us immediately with the following details:
+          </p>
+          <ul className="list-disc pl-6 space-y-1.5 text-xs sm:text-sm">
+            <li>The URL of the article or material on our site that you are requesting removal of.</li>
+            <li>Proof or explanation of your ownership or authorization to represent the copyright holder.</li>
+            <li>Your contact information (name and email address).</li>
+          </ul>
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm">
-            <p className="font-semibold text-slate-900">Designated DMCA Copyright Agent:</p>
-            <p>Spotlight Media Legal Department</p>
-            <p>Attn: DMCA Copyright Takedown Coordinator</p>
-            <p>Email: <a href="mailto:dmca@spotlightmedia.com" className="text-indigo-600 underline font-medium">dmca@spotlightmedia.com</a></p>
+            <p className="font-semibold text-slate-900">Direct Copyright Contact:</p>
+            <p>
+              Email:{' '}
+              <a href="mailto:qbinhtkcongviec@gmail.com" className="text-indigo-600 underline font-medium">
+                qbinhtkcongviec@gmail.com
+              </a>
+            </p>
+            <p className="text-slate-500 mt-1">We address valid notices and remove infringing material promptly upon receipt.</p>
           </div>
         </section>
 
-        {/* Section 4 */}
+        {/* Disclaimers */}
         <section className="space-y-4">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            4. Editorial Independence, Parody & Humor Disclaimers
+            5. Disclaimers & Limitation of Liability
           </h2>
           <p>
-            Spotlight covers <strong>Entertainment, Sports, and Comedy</strong>. Readers must recognize distinct editorial formats:
-          </p>
-          <ul className="list-disc pl-6 space-y-2">
-            <li><strong>Journalism & Sports Analysis:</strong> Fact-checked reporting on sporting events, league standings, player transactions, and industry news is verified against reliable public records and official press communications.</li>
-            <li><strong>Comedy & Satirical Features:</strong> Content published under the Comedy category may feature satire, hyperbole, parodic commentary, or humorous opinion. Parody and comedic commentary are recognized forms of constitutionally protected speech and should not be construed as literal statements of factual claims.</li>
-            <li><strong>Third-Party Opinions:</strong> Op-eds, guest columns, and interviews reflect the personal viewpoints of respective speakers and do not necessarily represent the institutional editorial stance of Spotlight.</li>
-          </ul>
-        </section>
-
-        {/* Section 5 */}
-        <section className="space-y-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            5. System Integrity & Acceptable Use Policy
-          </h2>
-          <p>
-            When utilizing Spotlight, you agree not to engage in any activity that compromises server infrastructure or violates the <strong>Computer Fraud and Abuse Act (18 U.S.C. § 1030)</strong>:
-          </p>
-          <ul className="list-disc pl-6 space-y-1.5">
-            <li>Do not launch automated denial-of-service (DoS/DDoS) attacks or intentionally flood API endpoints.</li>
-            <li>Do not bypass authentication mechanisms, manipulate session tokens, or attempt administrative escalation.</li>
-            <li>Do not inject malicious code, scripts, or cross-site scripting (XSS) payloads into form fields or comment systems.</li>
-            <li>Do not misrepresent affiliation with Spotlight or impersonate editorial staff members.</li>
-          </ul>
-        </section>
-
-        {/* Section 6 */}
-        <section className="space-y-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            6. Advertising Disclaimers & Google AdSense Transparency
-          </h2>
-          <p>
-            Spotlight is monetized in part through commercial sponsorships, affiliate partnerships, and digital advertising programs, including Google AdSense. In accordance with Google AdSense program policies and the Federal Trade Commission (FTC) Guides Concerning the Use of Endorsements and Testimonials (16 C.F.R. Part 255):
-          </p>
-          <ul className="list-disc pl-6 space-y-1.5">
-            <li>Advertisements are distinguished from organic editorial content through visual badges or placement markers.</li>
-            <li>Spotlight does not endorse, guarantee, or make warranties regarding third-party products, services, or claims advertised through external ad networks.</li>
-            <li>Clicking on advertising links directs users to external web properties subject to separate terms and privacy policies.</li>
-          </ul>
-        </section>
-
-        {/* Section 7 */}
-        <section className="space-y-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            7. Disclaimer of Warranties & Limitation of Liability
-          </h2>
-          <p className="uppercase text-xs font-bold tracking-wider text-slate-500">
-            Important Notice Regarding Legal Remedies
+            The content provided on Spotlight is for informational, cultural, and entertainment purposes only. While we aim for accuracy in reporting news, scores, and dates, content is provided on an &ldquo;as is&rdquo; basis without warranties of completeness or fitness for a particular purpose.
           </p>
           <p>
-            THE SERVICES, CONTENT, AND CODE PROVIDED ON SPOTLIGHT ARE OFFERED ON AN &ldquo;AS IS&rdquo; AND &ldquo;AS AVAILABLE&rdquo; BASIS WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, OR NON-INFRINGEMENT.
-          </p>
-          <p>
-            TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, IN NO EVENT SHALL SPOTLIGHT, ITS DIRECTORS, EMPLOYEES, AFFILIATES, OR CONTENT CONTRIBUTORS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, DATA, OR GOODWILL, ARISING OUT OF OR IN CONNECTION WITH YOUR ACCESS TO OR USE OF THE SITE.
+            Under no circumstances will Spotlight or its administrators be liable for any direct or indirect loss resulting from the use of, or inability to use, the information or services provided on this site.
           </p>
         </section>
 
-        {/* Section 8 */}
+        {/* External Links */}
+        <section className="space-y-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            6. External Links & Advertising
+          </h2>
+          <p>
+            Our website may contain links to external third-party websites or advertisements served via networks like Google AdSense. We do not control or endorse the content, policies, or products offered by external sites, and we encourage you to review their terms and privacy policies.
+          </p>
+        </section>
+
+        {/* Contact */}
         <section className="space-y-4 border-t border-slate-200 pt-8">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            8. Governing Law, Severability & Amendments
+            7. Contact Information
           </h2>
           <p>
-            These Terms shall be interpreted and governed in accordance with applicable laws, without regard to conflict of law principles. If any provision of these Terms is deemed unlawful, void, or for any reason unenforceable by a court of competent jurisdiction, that provision shall be deemed severable and shall not affect the validity and enforceability of any remaining provisions.
-          </p>
-          <p>
-            We reserve the right to amend these Terms at our discretion. Notice of substantial revisions will be reflected in the &ldquo;Effective Date&rdquo; header above.
+            For questions regarding these Terms of Service or editorial matters, please reach out to:
           </p>
           <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-xs sm:text-sm space-y-1">
-            <p className="font-semibold text-slate-900">Legal Contact:</p>
-            <p>Spotlight Media Legal Department</p>
-            <p>Email: <a href="mailto:legal@spotlightmedia.com" className="text-indigo-600 underline font-semibold">legal@spotlightmedia.com</a></p>
+            <p><strong>Spotlight Site Administration</strong></p>
+            <p>
+              Email:{' '}
+              <a href="mailto:qbinhtkcongviec@gmail.com" className="text-indigo-600 underline font-semibold">
+                qbinhtkcongviec@gmail.com
+              </a>
+            </p>
           </div>
         </section>
       </div>
@@ -168,7 +144,7 @@ export default function TermsPage() {
       <div className="text-center text-xs text-slate-400">
         <Link href="/privacy-policy" className="hover:text-slate-600 underline mr-4">Privacy Policy</Link>
         <Link href="/cookie-policy" className="hover:text-slate-600 underline mr-4">Cookie Policy</Link>
-        <Link href="/contact" className="hover:text-slate-600 underline">Contact Editorial Desk</Link>
+        <Link href="/contact" className="hover:text-slate-600 underline">Contact Us</Link>
       </div>
     </div>
   );

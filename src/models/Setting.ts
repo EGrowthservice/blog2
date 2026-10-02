@@ -21,6 +21,9 @@ export interface ISettingDocument extends mongoose.Document {
   };
   gaId?: string;
   adsenseClient?: string;
+  notifyNewComment?: boolean;
+  notifyNewReport?: boolean;
+  adminNotificationEmail?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,7 +56,7 @@ const SettingSchema = new Schema<ISettingDocument>(
     },
     email: {
       type: String,
-      default: 'contact@spotlightmedia.com',
+      default: 'qbinhtkcongviec@gmail.com',
       trim: true,
     },
     defaultMetaTitle: {
@@ -91,6 +94,19 @@ const SettingSchema = new Schema<ISettingDocument>(
     adsenseClient: {
       type: String,
       default: '',
+      trim: true,
+    },
+    notifyNewComment: {
+      type: Boolean,
+      default: true,
+    },
+    notifyNewReport: {
+      type: Boolean,
+      default: true,
+    },
+    adminNotificationEmail: {
+      type: String,
+      default: 'qbinhtkcongviec@gmail.com',
       trim: true,
     },
   },

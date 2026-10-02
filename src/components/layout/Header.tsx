@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Search, Menu, X, ArrowRight } from 'lucide-react';
 import { ICategory } from '@/types';
 
@@ -33,16 +34,23 @@ export default function Header({ categories = [], siteName = 'Spotlight' }: Head
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 via-red-600 to-amber-500 flex items-center justify-center text-white font-black text-xl shadow-md shadow-rose-500/20 group-hover:scale-105 transition-transform">
-                S
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 group-hover:scale-105 transition-transform flex items-center justify-center bg-slate-100 shrink-0">
+                <Image
+                  src="/avt.png"
+                  alt={siteName}
+                  width={44}
+                  height={44}
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-black tracking-tight text-slate-900 group-hover:text-rose-600 transition-colors">
+                <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">
                   {siteName}
                 </span>
-                <span className="text-[10px] tracking-widest uppercase font-semibold text-slate-400 -mt-1">
-                  Entertainment · Sports · Comedy
+                <span className="text-[10px] tracking-widest uppercase font-semibold text-slate-400 -mt-0.5">
+                  Editorial News & Insights
                 </span>
               </div>
             </Link>

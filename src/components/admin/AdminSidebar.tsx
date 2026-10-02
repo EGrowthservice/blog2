@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -13,6 +14,7 @@ import {
   LogOut,
   ExternalLink,
   PlusCircle,
+  MessageSquare,
 } from 'lucide-react';
 
 export default function AdminSidebar() {
@@ -35,46 +37,54 @@ export default function AdminSidebar() {
 
   const navGroups = [
     {
-      group: 'Overview',
+      group: 'Tổng quan',
       items: [
-        { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+        { name: 'Bảng điều khiển', href: '/admin/dashboard', icon: LayoutDashboard },
       ],
     },
     {
-      group: 'Content Management',
+      group: 'Quản lý nội dung',
       items: [
-        { name: 'Articles', href: '/admin/articles', icon: FileText },
-        { name: 'Categories', href: '/admin/categories', icon: FolderTree },
-        { name: 'Tags', href: '/admin/tags', icon: Tags },
+        { name: 'Bài viết', href: '/admin/articles', icon: FileText },
+        { name: 'Danh mục', href: '/admin/categories', icon: FolderTree },
+        { name: 'Thẻ (Tags)', href: '/admin/tags', icon: Tags },
+        { name: 'Bình luận & Báo cáo', href: '/admin/comments', icon: MessageSquare },
       ],
     },
     {
-      group: 'Monetization & Analytics',
+      group: 'Quảng cáo & Thống kê',
       items: [
-        { name: 'Advertisements', href: '/admin/advertisements', icon: Megaphone },
+        { name: 'Quảng cáo', href: '/admin/advertisements', icon: Megaphone },
         { name: 'Google Analytics', href: '/admin/analytics', icon: BarChart3 },
       ],
     },
     {
-      group: 'System',
+      group: 'Hệ thống',
       items: [
-        { name: 'Settings & SEO', href: '/admin/settings', icon: Settings },
+        { name: 'Cài đặt & SEO', href: '/admin/settings', icon: Settings },
       ],
     },
   ];
 
   return (
     <aside className="w-64 bg-slate-900 text-slate-300 min-h-screen flex flex-col border-r border-slate-800 shrink-0">
-      {/* Brand Header */}
-      <div className="p-6 border-b border-slate-800 flex items-center justify-between">
-        <Link href="/admin/dashboard" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-base shadow-md">
-            S
+      {/* Brand Header with /avt.png logo */}
+      <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+        <Link href="/admin/dashboard" className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700/80 overflow-hidden flex items-center justify-center shrink-0">
+            <Image
+              src="/avt.png"
+              alt="Logo"
+              width={36}
+              height={36}
+              className="w-full h-full object-cover"
+              priority
+            />
           </div>
           <div>
-            <span className="font-bold text-white tracking-tight text-base block">Spotlight</span>
-            <span className="text-[10px] uppercase font-semibold tracking-wider text-indigo-400 block -mt-1">
-              Admin Portal
+            <span className="font-bold text-white tracking-tight text-sm block">Quản Trị Blog</span>
+            <span className="text-[10px] uppercase font-semibold tracking-wider text-indigo-400 block">
+              Bảng Quản Trị
             </span>
           </div>
         </Link>
@@ -84,10 +94,10 @@ export default function AdminSidebar() {
       <div className="p-4">
         <Link
           href="/admin/articles/create"
-          className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition shadow-lg shadow-indigo-600/20"
+          className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-indigo-600/20"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>Write Article</span>
+          <span>Viết bài mới</span>
         </Link>
       </div>
 
@@ -95,7 +105,7 @@ export default function AdminSidebar() {
       <div className="flex-1 px-3 py-2 space-y-6 overflow-y-auto">
         {navGroups.map((group) => (
           <div key={group.group}>
-            <div className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+            <div className="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
               {group.group}
             </div>
             <ul className="space-y-1">
@@ -109,7 +119,7 @@ export default function AdminSidebar() {
                   <li key={item.name}>
                     <Link
                       href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
                         isActive
                           ? 'bg-indigo-600 text-white shadow-sm'
                           : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
@@ -135,9 +145,9 @@ export default function AdminSidebar() {
         >
           <span className="flex items-center gap-2">
             <ExternalLink className="w-3.5 h-3.5" />
-            View Public Site
+            Xem trang chủ
           </span>
-          <span className="text-[10px] text-slate-500">Live</span>
+          <span className="text-[10px] text-emerald-400 font-semibold">Trực tuyến</span>
         </Link>
 
         <button
@@ -146,7 +156,7 @@ export default function AdminSidebar() {
           className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" />
-          <span>Sign Out</span>
+          <span>Đăng xuất</span>
         </button>
       </div>
     </aside>

@@ -18,6 +18,11 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: '/',
     },
+    icons: {
+      icon: '/avt.png',
+      shortcut: '/avt.png',
+      apple: '/avt.png',
+    },
     openGraph: {
       title: settings.defaultMetaTitle || 'Spotlight',
       description: settings.defaultMetaDescription,
@@ -65,6 +70,8 @@ export default async function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <link rel="icon" type="image/png" href="/avt.png" />
+        <link rel="apple-touch-icon" href="/avt.png" />
         {adsenseClient && (
           <Script
             async

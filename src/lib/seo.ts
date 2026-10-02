@@ -66,7 +66,7 @@ export function getOrganizationJsonLd(settings?: Partial<ISetting>, siteUrl: str
     sameAs: socialProfiles,
     contactPoint: {
       '@type': 'ContactPoint',
-      email: settings?.email || 'editorial@spotlightmedia.com',
+      email: settings?.email || 'qbinhtkcongviec@gmail.com',
       contactType: 'editorial',
     },
   };

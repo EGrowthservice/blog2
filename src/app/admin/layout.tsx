@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 
 export const metadata: Metadata = {
-  title: 'Spotlight Admin Portal',
+  title: 'Hệ Thống Quản Trị Blog',
   robots: {
     index: false,
     follow: false,

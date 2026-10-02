@@ -10,6 +10,7 @@ import TableOfContents from '@/components/articles/TableOfContents';
 import SocialShare from '@/components/articles/SocialShare';
 import RelatedArticles from '@/components/articles/RelatedArticles';
 import ViewCounter from '@/components/articles/ViewCounter';
+import CommentSection from '@/components/articles/CommentSection';
 import { ICategory, ITag } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -216,6 +217,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           prevPost={prevPost}
           nextPost={nextPost}
         />
+
+        {/* Guest Comments & Reporting (No login required) */}
+        <CommentSection postId={post._id} postTitle={post.title} />
       </article>
     </>
   );

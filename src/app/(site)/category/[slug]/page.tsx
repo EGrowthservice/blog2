@@ -21,7 +21,7 @@ interface CategoryPageProps {
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
   await connectDB();
-  const category = await Category.findOne({ slug, isActive: true }).lean();
+  const category = await Category.findOne({ slug, isActive: { $ne: false } }).lean();
 
   if (!category) {
     return { title: 'Category Not Found' };
@@ -54,7 +54,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
   await connectDB();
   const [categoryDoc, settings] = await Promise.all([
-    Category.findOne({ slug, isActive: true }).lean(),
+    Category.findOne({ slug, isActive: { $ne: false } }).lean(),
     getSiteSettings(),
   ]);
 
@@ -94,47 +94,25 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      {/* Category Hero Banner */}
-      <div className="relative rounded-3xl bg-slate-900 border border-slate-800 p-8 sm:p-12 overflow-hidden shadow-xl text-white">
-        {category.image && (
-          <div className="absolute inset-0 opacity-25">
-            <Image
-              src={category.image}
-              alt={category.name}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
-          </div>
+      {/* Clean Category Header */}
+      <div className="border-b border-slate-200/80 pb-5">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition mb-3"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Back to Home
+        </Link>
+
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+          {category.name}
+        </h1>
+
+        {category.description && (
+          <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
+            {category.description}
+          </p>
         )}
-
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition mb-2"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back to All Topics
-          </Link>
-
-          <span className="inline-block px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider">
-            Category Archive
-          </span>
-
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
-            {category.name}
-          </h1>
-
-          {category.description && (
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-              {category.description}
-            </p>
-          )}
-
-          <div className="pt-2 text-xs font-semibold text-slate-400">
-            {totalPosts} {totalPosts === 1 ? 'Article' : 'Articles'} Published
-          </div>
-        </div>
       </div>
 
 

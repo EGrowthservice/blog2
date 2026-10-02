@@ -85,7 +85,10 @@ export async function DELETE(
     await connectDB();
 
     // Check if category has articles
-    const articleCount = await Post.countDocuments({ category: id });
+    const idQuery = mongoose.Types.ObjectId.isValid(id)
+      ? [{ category: id }, { category: new mongoose.Types.ObjectId(id) }]
+      : [{ category: id }];
+    const articleCount = await Post.countDocuments({ $or: idQuery });
     if (articleCount > 0) {
       return NextResponse.json(
         { error: `Cannot delete category because ${articleCount} article(s) are assigned to it.` },

@@ -19,6 +19,14 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
+    // Direct /admin visits redirect to /admin/dashboard
+    if (pathname === '/admin' || pathname === '/admin/') {
+      if (session) {
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+      }
+      return NextResponse.redirect(new URL('/admin/login?from=/admin/dashboard', request.url));
+    }
+
     // Any other /admin path requires valid session
     if (!session) {
       const loginUrl = new URL('/admin/login', request.url);

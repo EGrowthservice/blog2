@@ -9,7 +9,7 @@ const DEFAULT_SETTINGS = {
   logo: '',
   favicon: '',
   description: 'Spotlight is a premier digital publication delivering curated reporting, insightful commentary, and captivating coverage across Entertainment, Sports, and Comedy.',
-  email: 'editorial@spotlightmedia.com',
+  email: 'qbinhtkcongviec@gmail.com',
   defaultMetaTitle: 'Spotlight - Entertainment, Sports & Comedy Magazine',
   defaultMetaDescription: 'Read the latest in entertainment news, sports reporting, and comedic commentary on Spotlight.',
   ogImage: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&h=630&q=80',
@@ -24,6 +24,9 @@ const DEFAULT_SETTINGS = {
   },
   gaId: process.env.NEXT_PUBLIC_GA_ID || '',
   adsenseClient: process.env.NEXT_PUBLIC_ADSENSE_CLIENT || '',
+  notifyNewComment: true,
+  notifyNewReport: true,
+  adminNotificationEmail: 'qbinhtkcongviec@gmail.com',
 };
 
 export async function GET() {

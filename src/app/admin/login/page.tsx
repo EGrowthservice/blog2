@@ -1,14 +1,17 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Shield, Lock, Mail, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import Image from 'next/image';
+import { Lock, Mail, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const from = searchParams.get('from') || '/admin/dashboard';
+  const rawFrom = searchParams.get('from');
+  const targetDestination = rawFrom && rawFrom !== '/admin' && rawFrom !== '/admin/login'
+    ? rawFrom
+    : '/admin/dashboard';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,15 +33,14 @@ function LoginForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to authenticate');
+        throw new Error(data.error || 'Đăng nhập không thành công');
       }
 
-      router.push(from);
-      router.refresh();
+      // Hard redirect to dashboard to ensure fresh cookies and middleware sync
+      window.location.href = targetDestination;
     } catch (err: unknown) {
       const errorObj = err as Error;
-      setError(errorObj.message || 'Authentication failed. Please check your credentials.');
-    } finally {
+      setError(errorObj.message || 'Xác thực thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.');
       setLoading(false);
     }
   };
@@ -50,16 +52,23 @@ function LoginForm() {
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-10 shadow-2xl space-y-8">
-      {/* Header */}
+      {/* Header with main logo /avt.png */}
       <div className="text-center space-y-3">
-        <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white mx-auto shadow-lg shadow-indigo-600/30">
-          <Shield className="w-7 h-7" />
+        <div className="w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700/80 flex items-center justify-center text-white mx-auto shadow-xl overflow-hidden p-1">
+          <Image
+            src="/avt.png"
+            alt="Logo"
+            width={60}
+            height={60}
+            className="w-full h-full object-cover rounded-xl"
+            priority
+          />
         </div>
         <h1 className="text-2xl font-black text-white tracking-tight">
-          Spotlight Editorial CMS
+          Hệ Thống Quản Trị Blog
         </h1>
         <p className="text-xs text-slate-400">
-          Sign in with administrative privileges to manage articles, categories, ads, and system settings.
+          Đăng nhập tài khoản quản trị viên để quản lý bài viết, danh mục, hình ảnh và cài đặt hệ thống.
         </p>
       </div>
 
@@ -75,7 +84,7 @@ function LoginForm() {
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
           <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-            Staff Email
+            Email Quản Trị
           </label>
           <div className="relative">
             <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -92,7 +101,7 @@ function LoginForm() {
 
         <div>
           <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-            Master Password
+            Mật Khẩu
           </label>
           <div className="relative">
             <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -116,7 +125,7 @@ function LoginForm() {
             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
-              <span>Sign In to Dashboard</span>
+              <span>Đăng Nhập Vào Bảng Điều Khiển</span>
               <ArrowRight className="w-4 h-4" />
             </>
           )}
@@ -131,9 +140,9 @@ function LoginForm() {
           className="text-xs text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center gap-1 cursor-pointer transition"
         >
           <CheckCircle2 className="w-3.5 h-3.5" />
-          Fill default seed credentials
+          Điền tài khoản mẫu quản trị
         </button>
-        <div className="text-[11px] text-slate-500">
+        <div className="text-[11px] text-slate-500 font-mono">
           admin@spotlight.com / AdminPassword2026!
         </div>
       </div>
@@ -152,7 +161,7 @@ export default function AdminLoginPage() {
         <Suspense
           fallback={
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center text-slate-400">
-              Loading staff portal...
+              Đang tải cổng quản trị...
             </div>
           }
         >
@@ -165,7 +174,7 @@ export default function AdminLoginPage() {
             href="/"
             className="text-xs text-slate-400 hover:text-white transition"
           >
-            ← Return to Public Blog
+            ← Quay lại trang chủ công khai
           </Link>
         </div>
       </div>

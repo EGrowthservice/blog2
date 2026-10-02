@@ -27,10 +27,12 @@ export async function GET(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: Record<string, any> = {};
 
-    // Filter by status (public view only sees published articles unless specified)
+    // Filter by status (public view only sees published articles unless status=all or specific status)
     if (status && status !== 'all') {
       filter.status = status;
-    } else if (!status) {
+    } else if (status === 'all') {
+      // Do not filter by status -> return all posts (published, draft, scheduled, archived)
+    } else {
       filter.status = 'published';
     }
 

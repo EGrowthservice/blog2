@@ -113,6 +113,9 @@ export interface ISetting {
   socialLinks: ISocialLinks;
   gaId?: string;
   adsenseClient?: string;
+  notifyNewComment?: boolean;
+  notifyNewReport?: boolean;
+  adminNotificationEmail?: string;
   createdAt?: string;
   updatedAt?: string;
 }
