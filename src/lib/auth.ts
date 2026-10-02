@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
 import { NextRequest } from 'next/server';
 
-const AUTH_SECRET = process.env.AUTH_SECRET || 'nexuspress-super-secret-jwt-key-min-32-chars-2026!';
+const AUTH_SECRET = process.env.AUTH_SECRET || process.env.JWT_SECRET || 'nexuspress-super-secret-jwt-key-min-32-chars-2026!';
 const secretKey = new TextEncoder().encode(AUTH_SECRET);
 
 export interface SessionPayload {
