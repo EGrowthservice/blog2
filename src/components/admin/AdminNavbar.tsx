@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import {
   ExternalLink,
@@ -44,6 +44,19 @@ export default function AdminNavbar({ title = 'Bảng điều khiển' }: AdminN
   const [activeTab, setActiveTab] = useState<'all' | 'reports' | 'comments'>('all');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const fetchNotifications = useCallback(() => {
+    fetch('/api/admin/notifications')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.success) {
+          setUnreadCount(data.unreadCount || 0);
+          setReports(data.reports || []);
+          setComments(data.comments || []);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     fetch('/api/auth/me')
       .then((res) => (res.ok ? res.json() : null))
@@ -60,20 +73,7 @@ export default function AdminNavbar({ title = 'Bảng điều khiển' }: AdminN
     // Poll every 60s
     const interval = setInterval(fetchNotifications, 60000);
     return () => clearInterval(interval);
-  }, []);
-
-  const fetchNotifications = () => {
-    fetch('/api/admin/notifications')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.success) {
-          setUnreadCount(data.unreadCount || 0);
-          setReports(data.reports || []);
-          setComments(data.comments || []);
-        }
-      })
-      .catch(() => {});
-  };
+  }, [fetchNotifications]);
 
   // Close dropdown on outside click
   useEffect(() => {

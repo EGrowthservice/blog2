@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Clock, Eye, Calendar, Flame } from 'lucide-react';
+import { Clock, Eye, Calendar } from 'lucide-react';
 import { IPost, ICategory } from '@/types';
 import { formatDate, formatNumber } from '@/lib/utils';
 

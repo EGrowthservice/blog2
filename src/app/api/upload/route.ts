@@ -18,6 +18,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const hasKey =
+      process.env.SUPABASE_SECRET_KEY ||
+      process.env.SUPABASE_SECRET ||
+      process.env.NEXT_PUBLIC_SUPABASE_SECRET ||
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    if (!hasKey) {
+      return NextResponse.json(
+        { error: 'Cấu hình Supabase Storage chưa được thiết lập trên máy chủ (thiếu biến SUPABASE_SECRET_KEY).' },
+        { status: 500 }
+      );
+    }
+
     // Validate MIME type
     const validMimeTypes = [
       'image/jpeg',

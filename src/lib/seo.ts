@@ -1,6 +1,9 @@
 import { IPost, ISetting } from '@/types';
 
-export const DEFAULT_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+export const DEFAULT_SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  process.env.NEXT_PUBLIC_APP_URL ||
+  'http://localhost:3000';
 
 export function getArticleJsonLd(post: IPost, siteUrl: string = DEFAULT_SITE_URL) {
   const authorName = typeof post.author === 'object' && post.author ? post.author.name : 'Spotlight Editorial Desk';
@@ -20,14 +23,14 @@ export function getArticleJsonLd(post: IPost, siteUrl: string = DEFAULT_SITE_URL
     dateModified: post.updatedAt || post.publishedAt || post.createdAt,
     author: {
       '@type': 'Organization',
-      name: 'Spotlight Editorial Desk',
+      name: authorName,
     },
     publisher: {
       '@type': 'Organization',
       name: 'Spotlight',
       logo: {
         '@type': 'ImageObject',
-        url: `${siteUrl}/logo.png`,
+        url: `${siteUrl}/avt.png`,
       },
     },
     articleSection: categoryName,

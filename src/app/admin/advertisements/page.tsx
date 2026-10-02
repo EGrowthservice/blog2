@@ -9,7 +9,6 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Layers,
 } from 'lucide-react';
 import AdminNavbar from '@/components/admin/AdminNavbar';
 import ImageUpload from '@/components/admin/ImageUpload';

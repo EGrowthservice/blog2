@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, MessageSquare, Send, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Mail, Send, CheckCircle2, ShieldCheck } from 'lucide-react';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);

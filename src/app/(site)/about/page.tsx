@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Film, Trophy, Music, Tv, Mail, ShieldCheck } from 'lucide-react';
+import { Film, Trophy, Music, Tv, Mail } from 'lucide-react';
 import { getSiteSettings } from '@/lib/data';
 
 export const metadata: Metadata = {

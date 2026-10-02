@@ -5,7 +5,10 @@ import Category from '@/models/Category';
 import Tag from '@/models/Tag';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    'http://localhost:3000';
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {

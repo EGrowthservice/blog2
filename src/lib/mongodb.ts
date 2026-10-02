@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/english_blog';
-
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose | null> | null;
@@ -18,29 +16,40 @@ if (!global.mongooseCache) {
 }
 
 export async function connectDB(): Promise<typeof mongoose | null> {
-  if (cached.conn) {
+  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/english_blog';
+
+  // Check if connection is already established and alive
+  if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
   }
 
-  if (!MONGODB_URI) {
-    console.warn('⚠️ MONGODB_URI is not defined. Database operations will be skipped or return empty states.');
+  // If connection dropped or in error state, reset cache
+  if (cached.conn && mongoose.connection.readyState === 0) {
+    cached.conn = null;
+    cached.promise = null;
+  }
+
+  if (!uri) {
+    console.warn('⚠️ MONGODB_URI is not defined. Database operations will return empty states.');
     return null;
   }
 
   if (!cached.promise) {
-    const opts = {
+    const opts: mongoose.ConnectOptions = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 8000,
+      maxPoolSize: 10,
     };
 
     cached.promise = mongoose
-      .connect(MONGODB_URI, opts)
+      .connect(uri, opts)
       .then((m) => {
         return m;
       })
       .catch((err) => {
         console.error('❌ MongoDB connection error:', err?.message || err);
         cached.promise = null;
+        cached.conn = null;
         return null;
       });
   }
@@ -49,6 +58,7 @@ export async function connectDB(): Promise<typeof mongoose | null> {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
+    cached.conn = null;
     console.error('❌ Failed to establish MongoDB connection:', e);
     return null;
   }
