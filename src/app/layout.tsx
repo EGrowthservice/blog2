@@ -19,7 +19,10 @@ export async function generateMetadata(): Promise<Metadata> {
       canonical: '/',
     },
     icons: {
-      icon: '/avt.png',
+      icon: [
+        { url: '/avt.png', type: 'image/png' },
+        { url: '/favicon.ico', type: 'image/x-icon' },
+      ],
       shortcut: '/avt.png',
       apple: '/avt.png',
     },
@@ -69,9 +72,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="scroll-smooth">
-      <head>
-        <link rel="icon" type="image/png" href="/avt.png" />
-        <link rel="apple-touch-icon" href="/avt.png" />
+      <body className="min-h-screen bg-slate-50 text-slate-900 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
         {adsenseClient && (
           <Script
             async
@@ -80,8 +81,6 @@ export default async function RootLayout({
             strategy="afterInteractive"
           />
         )}
-      </head>
-      <body className="min-h-screen bg-slate-50 text-slate-900 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
         <GoogleAnalytics gaId={settings.gaId} />
         {children}
       </body>
