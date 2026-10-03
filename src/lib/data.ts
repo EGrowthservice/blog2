@@ -113,33 +113,52 @@ export async function getHomepageArticles(): Promise<{
 export async function getArticleBySlug(slug: string): Promise<{
   post: IPost | null;
   relatedPosts: IPost[];
+  sidebarPosts: IPost[];
   prevPost: IPost | null;
   nextPost: IPost | null;
 }> {
   try {
     const conn = await connectDB();
-    if (!conn) return { post: null, relatedPosts: [], prevPost: null, nextPost: null };
+    if (!conn) return { post: null, relatedPosts: [], sidebarPosts: [], prevPost: null, nextPost: null };
 
     const postDoc = await Post.findOne({ slug, status: 'published' })
       .populate('category')
       .populate('tags')
       .lean();
 
-    if (!postDoc) return { post: null, relatedPosts: [], prevPost: null, nextPost: null };
+    if (!postDoc) return { post: null, relatedPosts: [], sidebarPosts: [], prevPost: null, nextPost: null };
 
     const post = JSON.parse(JSON.stringify(postDoc));
 
     // Get related posts from same category
     const categoryId = typeof post.category === 'object' && post.category ? post.category._id : post.category;
-    const relatedDocs = await Post.find({
+    let relatedDocs = await Post.find({
       category: categoryId,
       _id: { $ne: post._id },
       status: 'published',
     })
       .populate('category', 'name slug')
       .sort({ publishedAt: -1 })
-      .limit(3)
+      .limit(8)
       .lean();
+
+    // If fewer than 6, fetch latest published posts to supplement
+    if (relatedDocs.length < 6) {
+      const existingIds = [post._id, ...relatedDocs.map((d: { _id: unknown }) => d._id)];
+      const moreDocs = await Post.find({
+        _id: { $nin: existingIds },
+        status: 'published',
+      })
+        .populate('category', 'name slug')
+        .sort({ publishedAt: -1 })
+        .limit(8 - relatedDocs.length)
+        .lean();
+      relatedDocs = [...relatedDocs, ...moreDocs];
+    }
+
+    const allRelated: IPost[] = JSON.parse(JSON.stringify(relatedDocs));
+    const sidebarPosts = allRelated.slice(0, 5);
+    const bottomPosts = allRelated.length > 5 ? allRelated.slice(5, 9) : allRelated.slice(0, 3);
 
     // Get previous and next articles
     const [prevDoc, nextDoc] = await Promise.all([
@@ -161,12 +180,13 @@ export async function getArticleBySlug(slug: string): Promise<{
 
     return {
       post,
-      relatedPosts: JSON.parse(JSON.stringify(relatedDocs)),
+      relatedPosts: bottomPosts,
+      sidebarPosts,
       prevPost: prevDoc ? JSON.parse(JSON.stringify(prevDoc)) : null,
       nextPost: nextDoc ? JSON.parse(JSON.stringify(nextDoc)) : null,
     };
   } catch (e) {
     console.warn('Error fetching article:', e);
-    return { post: null, relatedPosts: [], prevPost: null, nextPost: null };
+    return { post: null, relatedPosts: [], sidebarPosts: [], prevPost: null, nextPost: null };
   }
 }

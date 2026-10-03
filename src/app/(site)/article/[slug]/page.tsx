@@ -3,12 +3,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { Calendar, Clock, Eye, ArrowLeft } from 'lucide-react';
-import { getArticleBySlug, getSiteSettings } from '@/lib/data';
+import { getArticleBySlug, getSiteSettings, getActiveCategories } from '@/lib/data';
 import { formatDate, formatNumber, sanitizeHtmlContent } from '@/lib/utils';
 import { getArticleJsonLd, getBreadcrumbJsonLd } from '@/lib/seo';
-import TableOfContents from '@/components/articles/TableOfContents';
 import SocialShare from '@/components/articles/SocialShare';
 import RelatedArticles from '@/components/articles/RelatedArticles';
+import ArticleSidebar from '@/components/articles/ArticleSidebar';
 import ViewCounter from '@/components/articles/ViewCounter';
 import CommentSection from '@/components/articles/CommentSection';
 import { ICategory, ITag } from '@/types';
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
   if (!post) {
     return {
-      title: 'Article Not Found',
+      title: 'Bài viết không tồn tại',
     };
   }
 
@@ -68,16 +68,18 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const [{ post, relatedPosts, prevPost, nextPost }] =
+  const [{ post, relatedPosts, sidebarPosts, prevPost, nextPost }, categories] =
     await Promise.all([
       getArticleBySlug(slug),
+      getActiveCategories(),
     ]);
 
   if (!post) {
     notFound();
   }
 
-  const category = typeof post.category === 'object' && post.category ? (post.category as ICategory) : null;
+  const category =
+    typeof post.category === 'object' && post.category ? (post.category as ICategory) : null;
   const tags = Array.isArray(post.tags) ? (post.tags as ITag[]) : [];
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -87,7 +89,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const articleJsonLd = getArticleJsonLd(post, siteUrl);
   const breadcrumbJsonLd = getBreadcrumbJsonLd(
     [
-      { name: 'Home', url: '/' },
+      { name: 'Trang chủ', url: '/' },
       ...(category ? [{ name: category.name, url: `/category/${category.slug}` }] : []),
       { name: post.title, url: `/article/${post.slug}` },
     ],
@@ -111,116 +113,130 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       {/* Real view count updater */}
       <ViewCounter articleIdOrSlug={post._id} />
 
-      <article className="max-w-4xl mx-auto">
-        {/* Back Link & Category */}
-        <div className="flex items-center justify-between mb-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        {/* Navigation Bar / Breadcrumb Header */}
+        <div className="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200/70">
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            Back to Home
+            <span>Trang chủ</span>
           </Link>
 
           {category && (
             <Link
               href={`/category/${category.slug}`}
-              className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold text-xs uppercase tracking-wider hover:bg-indigo-100 transition"
+              className="px-3.5 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold text-xs uppercase tracking-wider hover:bg-indigo-100 transition border border-indigo-100"
             >
               {category.name}
             </Link>
           )}
         </div>
 
-        {/* Title */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.15] mb-6">
-          {post.title}
-        </h1>
+        {/* 2-Column Responsive Layout: Main Article (8 cols) + Right Sidebar (4 cols) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          {/* Main Article Content */}
+          <article className="lg:col-span-8 min-w-0">
+            {/* Title */}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.2] mb-4 sm:mb-6">
+              {post.title}
+            </h1>
 
-        {/* Excerpt */}
-        {post.excerpt && (
-          <p className="text-lg sm:text-xl text-slate-600 leading-relaxed mb-6 font-normal">
-            {post.excerpt}
-          </p>
-        )}
+            {/* Excerpt */}
+            {post.excerpt && (
+              <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-6 font-normal">
+                {post.excerpt}
+              </p>
+            )}
 
-        {/* Meta Bar without author */}
-        <div className="flex flex-wrap items-center justify-between gap-4 py-3.5 border-y border-slate-200/80 mb-8 text-xs text-slate-500">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 font-medium text-slate-700">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
-              {formatDate(post.publishedAt || post.createdAt)}
-            </span>
-            <span>·</span>
-            <span className="flex items-center gap-1.5 font-medium text-slate-700">
-              <Clock className="w-3.5 h-3.5 text-slate-400" />
-              {post.readingTime} min read
-            </span>
-          </div>
+            {/* Meta Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-4 py-3.5 border-y border-slate-200/80 mb-8 text-xs text-slate-500">
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                  {formatDate(post.publishedAt || post.createdAt)}
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  {post.readingTime || 1} min read
+                </span>
+              </div>
 
-          <div className="flex items-center gap-1 text-slate-500 font-medium">
-            <Eye className="w-3.5 h-3.5 text-slate-400" />
-            <span>{formatNumber(post.views || 0)} views</span>
-          </div>
-        </div>
+              <div className="flex items-center gap-1 text-slate-500 font-medium">
+                <Eye className="w-3.5 h-3.5 text-slate-400" />
+                <span>{formatNumber(post.views || 0)} lượt xem</span>
+              </div>
+            </div>
 
-        {/* Featured Image */}
-        {post.featuredImage && (
-          <div className="relative aspect-[16/9] w-full rounded-3xl overflow-hidden mb-10 shadow-lg bg-slate-100">
-            <Image
-              src={post.featuredImage}
-              alt={post.title}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 896px"
-              className="object-cover"
+            {/* Featured Image */}
+            {post.featuredImage && (
+              <div className="relative aspect-[16/9] w-full rounded-2xl sm:rounded-3xl overflow-hidden mb-8 shadow-md bg-slate-100">
+                <Image
+                  src={post.featuredImage}
+                  alt={post.title}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 850px"
+                  className="object-cover"
+                />
+              </div>
+            )}
+
+            {/* Main Article Content (Table of Contents removed as requested) */}
+            <div
+              className="article-body prose prose-slate max-w-none mb-10 text-slate-800"
+              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             />
-          </div>
-        )}
 
-        {/* Table of Contents */}
-        <TableOfContents content={sanitizedContent} />
+            {/* Tags */}
+            {tags.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 pt-6 border-t border-slate-200 mb-8">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">
+                  Thẻ bài viết:
+                </span>
+                {tags.map((tg) => {
+                  const tagObj = typeof tg === 'object' ? tg : { name: tg, slug: tg };
+                  return (
+                    <Link
+                      key={tagObj.slug}
+                      href={`/tag/${tagObj.slug}`}
+                      className="px-3 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium hover:bg-indigo-50 hover:text-indigo-600 transition"
+                    >
+                      #{tagObj.name}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
 
-        {/* Main Article Content */}
-        <div
-          className="article-body prose prose-slate max-w-none mb-10"
-          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-        />
+            {/* Social Sharing */}
+            <SocialShare url={articleUrl} title={post.title} />
 
-        {/* Tags */}
-        {tags.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 pt-6 border-t border-slate-200">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">
-              Filed under:
-            </span>
-            {tags.map((tg) => {
-              const tagObj = typeof tg === 'object' ? tg : { name: tg, slug: tg };
-              return (
-                <Link
-                  key={tagObj.slug}
-                  href={`/tag/${tagObj.slug}`}
-                  className="px-3 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium hover:bg-indigo-50 hover:text-indigo-600 transition"
-                >
-                  #{tagObj.name}
-                </Link>
-              );
-            })}
-          </div>
-        )}
+            {/* Bottom Related Articles & Prev/Next */}
+            <RelatedArticles
+              relatedPosts={relatedPosts}
+              prevPost={prevPost}
+              nextPost={nextPost}
+            />
 
-        {/* Social Sharing */}
-        <SocialShare url={articleUrl} title={post.title} />
+            {/* Guest Comments & Reporting */}
+            <CommentSection postId={post._id} postTitle={post.title} />
+          </article>
 
-        {/* Internal Linking: Related & Prev/Next */}
-        <RelatedArticles
-          relatedPosts={relatedPosts}
-          prevPost={prevPost}
-          nextPost={nextPost}
-        />
-
-        {/* Guest Comments & Reporting (No login required) */}
-        <CommentSection postId={post._id} postTitle={post.title} />
-      </article>
+          {/* Right Sidebar: Related Articles & Categories */}
+          <aside className="lg:col-span-4 space-y-6">
+            <div className="sticky top-24 space-y-6">
+              <ArticleSidebar
+                posts={sidebarPosts}
+                currentCategory={category}
+                categories={categories}
+              />
+            </div>
+          </aside>
+        </div>
+      </div>
     </>
   );
 }

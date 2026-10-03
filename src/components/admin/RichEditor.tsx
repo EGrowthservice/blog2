@@ -167,7 +167,7 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
       // If cursor is in general text, wrap or apply to editor selection
       document.execCommand('formatBlock', false, '<p>');
       const currentSel = window.getSelection();
-      let parent = currentSel?.anchorNode?.parentElement;
+      const parent = currentSel?.anchorNode?.parentElement;
       if (parent && parent !== editorRef.current) {
         parent.style.lineHeight = spacing;
       }
@@ -1165,7 +1165,7 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
                 </label>
                 <select
                   value={imageAlign}
-                  onChange={(e) => setImageAlign(e.target.value as any)}
+                  onChange={(e) => setImageAlign(e.target.value as 'center' | 'left' | 'right')}
                   className="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-indigo-600 bg-white"
                 >
                   <option value="center">Căn giữa (Khuyên dùng)</option>

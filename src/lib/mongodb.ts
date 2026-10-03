@@ -26,13 +26,17 @@ async function cleanProblematicIndexes(m: typeof mongoose) {
       try {
         const col = db.collection(name);
         const indexes = await col.indexes();
-        if (indexes.some((idx: any) => idx.name === 'id_1')) {
+        if (indexes.some((idx: { name?: string }) => idx.name === 'id_1')) {
           await col.dropIndex('id_1');
           console.log(`✅ Automatically removed legacy id_1 index from ${name}`);
         }
-      } catch (_) {}
+      } catch {
+        // Ignore if collection does not exist or index already dropped
+      }
     }
-  } catch (_) {}
+  } catch {
+    // Ignore db operation errors in cleanup
+  }
 }
 
 export async function connectDB(): Promise<typeof mongoose | null> {
