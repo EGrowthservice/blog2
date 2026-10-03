@@ -38,7 +38,7 @@ const SettingSchema = new Schema<ISettingDocument>(
     },
     siteName: {
       type: String,
-      default: 'Spotlight',
+      default: 'CineNova',
       trim: true,
     },
     logo: {
@@ -51,22 +51,22 @@ const SettingSchema = new Schema<ISettingDocument>(
     },
     description: {
       type: String,
-      default: 'Spotlight is a premier digital publication delivering curated reporting, insightful commentary, and captivating coverage across Entertainment, Sports, and Comedy.',
+      default: 'CineNova is a premier digital publication delivering curated reporting, insightful commentary, and captivating coverage across Entertainment, Sports, and Movies.',
       trim: true,
     },
     email: {
       type: String,
-      default: 'qbinhtkcongviec@gmail.com',
+      default: 'contact@cinenova.click',
       trim: true,
     },
     defaultMetaTitle: {
       type: String,
-      default: 'Spotlight - Entertainment, Sports & Comedy Magazine',
+      default: 'CineNova - Entertainment, Sports & Cinema Magazine',
       trim: true,
     },
     defaultMetaDescription: {
       type: String,
-      default: 'Explore breaking stories, in-depth features, and engaging commentary across Entertainment, Sports, and Comedy on Spotlight.',
+      default: 'Explore breaking stories, in-depth features, and engaging commentary across Entertainment, Sports, and Movies on CineNova.',
       trim: true,
     },
     ogImage: {
