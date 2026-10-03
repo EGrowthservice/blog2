@@ -326,9 +326,14 @@ export default function EditArticlePage({ params }: EditArticleProps) {
 
             {/* Rich Editor */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                Nội dung bài viết (HTML) *
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Nội dung bài viết *
+                </label>
+                <span className="text-[11px] text-slate-500 font-medium">
+                  Soạn thảo văn bản hoặc dán từ ChatGPT / Word
+                </span>
+              </div>
               <RichEditor value={content} onChange={setContent} />
             </div>
 
