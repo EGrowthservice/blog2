@@ -26,7 +26,7 @@ export default function RelatedArticles({
             >
               <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                <span>Bài trước</span>
+                <span>Previous Article</span>
               </div>
               <h4 className="text-sm sm:text-base font-bold text-slate-800 group-hover:text-indigo-600 transition-colors line-clamp-2">
                 {prevPost.title}
@@ -42,7 +42,7 @@ export default function RelatedArticles({
               className="p-4 sm:p-5 rounded-2xl border border-slate-200 hover:border-indigo-400 bg-white hover:bg-slate-50/80 transition-all group flex flex-col justify-between text-right shadow-2xs"
             >
               <div className="flex items-center justify-end gap-1.5 text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">
-                <span>Bài tiếp theo</span>
+                <span>Next Article</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
               <h4 className="text-sm sm:text-base font-bold text-slate-800 group-hover:text-indigo-600 transition-colors line-clamp-2">
@@ -62,11 +62,11 @@ export default function RelatedArticles({
                 <Sparkles className="w-3.5 h-3.5" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-                Bài viết liên quan khác
+                More Related Articles
               </h3>
             </div>
             <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">
-              Khám phá thêm
+              Explore More
             </span>
           </div>
 

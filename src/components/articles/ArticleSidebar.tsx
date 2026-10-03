@@ -24,20 +24,20 @@ export default function ArticleSidebar({
             <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
               <Sparkles className="w-4 h-4" />
             </div>
-            <h3 className="font-bold text-slate-900 text-sm">Bài viết liên quan</h3>
+            <h3 className="font-bold text-slate-900 text-sm">Related Articles</h3>
           </div>
           {currentCategory && (
             <Link
               href={`/category/${currentCategory.slug}`}
               className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 transition"
             >
-              Xem tất cả
+              View All
             </Link>
           )}
         </div>
 
         {posts.length === 0 ? (
-          <p className="text-xs text-slate-400 italic py-2">Đang cập nhật bài viết mới...</p>
+          <p className="text-xs text-slate-400 italic py-2">No related articles yet...</p>
         ) : (
           <div className="space-y-4">
             {posts.map((post) => {
@@ -112,7 +112,7 @@ export default function ArticleSidebar({
             <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
               <Folder className="w-4 h-4" />
             </div>
-            <h3 className="font-bold text-slate-900 text-sm">Chuyên mục bài viết</h3>
+            <h3 className="font-bold text-slate-900 text-sm">Categories</h3>
           </div>
 
           <div className="flex flex-wrap gap-1.5">

@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
   if (!post) {
     return {
-      title: 'Bài viết không tồn tại',
+      title: 'Article Not Found',
     };
   }
 
@@ -89,7 +89,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const articleJsonLd = getArticleJsonLd(post, siteUrl);
   const breadcrumbJsonLd = getBreadcrumbJsonLd(
     [
-      { name: 'Trang chủ', url: '/' },
+      { name: 'Home', url: '/' },
       ...(category ? [{ name: category.name, url: `/category/${category.slug}` }] : []),
       { name: post.title, url: `/article/${post.slug}` },
     ],
@@ -121,7 +121,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Trang chủ</span>
+            <span>Home</span>
           </Link>
 
           {category && (
@@ -166,7 +166,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
               <div className="flex items-center gap-1 text-slate-500 font-medium">
                 <Eye className="w-3.5 h-3.5 text-slate-400" />
-                <span>{formatNumber(post.views || 0)} lượt xem</span>
+                <span>{formatNumber(post.views || 0)} views</span>
               </div>
             </div>
 
@@ -194,7 +194,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {tags.length > 0 && (
               <div className="flex flex-wrap items-center gap-2 pt-6 border-t border-slate-200 mb-8">
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">
-                  Thẻ bài viết:
+                  Tagged with:
                 </span>
                 {tags.map((tg) => {
                   const tagObj = typeof tg === 'object' ? tg : { name: tg, slug: tg };
