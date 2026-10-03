@@ -83,14 +83,31 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastEmittedValue = useRef<string>(value || '');
   const savedSelectionRange = useRef<Range | null>(null);
+  const [previewHtml, setPreviewHtml] = useState<string>(value || '');
 
-  // Sync external value changes into contentEditable only when needed
+  // Sync external value changes into contentEditable and textarea
   useEffect(() => {
-    if (editorRef.current && value !== lastEmittedValue.current) {
-      if (editorRef.current.innerHTML !== value) {
+    if (editorRef.current) {
+      if (value !== lastEmittedValue.current && editorRef.current.innerHTML !== (value || '')) {
         editorRef.current.innerHTML = value || '';
         lastEmittedValue.current = value || '';
       }
+    }
+    if (textareaRef.current) {
+      if (textareaRef.current.value !== (value || '')) {
+        textareaRef.current.value = value || '';
+      }
+    }
+  }, [value]);
+
+  // Initial mount: ensure content is rendered in editor
+  useEffect(() => {
+    if (editorRef.current && !editorRef.current.innerHTML && value) {
+      editorRef.current.innerHTML = value;
+      lastEmittedValue.current = value;
+    }
+    if (textareaRef.current && !textareaRef.current.value && value) {
+      textareaRef.current.value = value;
     }
   }, [value]);
 
@@ -102,6 +119,69 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
     lastEmittedValue.current = cleanHtml;
     onChange(cleanHtml);
   }, [onChange]);
+
+  // View switcher that prevents any data loss
+  const handleSwitchView = (newMode: 'visual' | 'html' | 'preview') => {
+    if (newMode === viewMode) return;
+
+    // Leaving visual mode: capture current visual HTML
+    if (viewMode === 'visual' && editorRef.current) {
+      const html = editorRef.current.innerHTML;
+      const cleanHtml = html === '<p><br></p>' || html === '<p></p>' || html === '<br>' ? '' : html;
+      lastEmittedValue.current = cleanHtml;
+      onChange(cleanHtml);
+      setPreviewHtml(cleanHtml);
+      if (textareaRef.current) {
+        textareaRef.current.value = cleanHtml;
+      }
+    }
+
+    // Leaving html mode: sync textarea into editorRef
+    if (viewMode === 'html' && textareaRef.current) {
+      const html = textareaRef.current.value;
+      lastEmittedValue.current = html;
+      onChange(html);
+      setPreviewHtml(html);
+      if (editorRef.current) {
+        editorRef.current.innerHTML = html;
+      }
+    }
+
+    // Entering visual mode
+    if (newMode === 'visual') {
+      if (editorRef.current) {
+        if (viewMode === 'html' && textareaRef.current) {
+          editorRef.current.innerHTML = textareaRef.current.value;
+        } else if (!editorRef.current.innerHTML && (value || previewHtml)) {
+          editorRef.current.innerHTML = previewHtml || value || '';
+        }
+      }
+    }
+
+    // Entering html mode
+    if (newMode === 'html') {
+      if (textareaRef.current) {
+        const currentHtml =
+          viewMode === 'visual' && editorRef.current
+            ? editorRef.current.innerHTML
+            : value || previewHtml;
+        textareaRef.current.value = currentHtml || '';
+      }
+    }
+
+    // Entering preview mode
+    if (newMode === 'preview') {
+      const currentHtml =
+        viewMode === 'html' && textareaRef.current
+          ? textareaRef.current.value
+          : editorRef.current
+          ? editorRef.current.innerHTML
+          : value;
+      setPreviewHtml(currentHtml || '');
+    }
+
+    setViewMode(newMode);
+  };
 
   // Save selection before opening modal
   const saveSelection = () => {
@@ -451,12 +531,7 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
         <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700">
           <button
             type="button"
-            onClick={() => {
-              if (viewMode === 'html' && textareaRef.current && editorRef.current) {
-                editorRef.current.innerHTML = textareaRef.current.value;
-              }
-              setViewMode('visual');
-            }}
+            onClick={() => handleSwitchView('visual')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
               viewMode === 'visual'
                 ? 'bg-indigo-600 text-white shadow-xs'
@@ -468,7 +543,7 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
           </button>
           <button
             type="button"
-            onClick={() => setViewMode('html')}
+            onClick={() => handleSwitchView('html')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
               viewMode === 'html'
                 ? 'bg-indigo-600 text-white shadow-xs'
@@ -480,7 +555,7 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
           </button>
           <button
             type="button"
-            onClick={() => setViewMode('preview')}
+            onClick={() => handleSwitchView('preview')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
               viewMode === 'preview'
                 ? 'bg-indigo-600 text-white shadow-xs'
@@ -976,64 +1051,71 @@ export default function RichEditor({ value, onChange, placeholder }: RichEditorP
 
       {/* Main Canvas Container */}
       <div className="min-h-[550px] relative bg-slate-100/70 p-4 sm:p-8 flex justify-center overflow-y-auto">
-        {/* Mode 1: Visual Word-Like Document Canvas */}
-        {viewMode === 'visual' && (
-          <div
-            ref={editorRef}
-            contentEditable
-            onInput={notifyChange}
-            onKeyUp={notifyChange}
-            onPaste={handlePaste}
-            onKeyDown={handleKeyDown}
-            data-placeholder={
-              placeholder ||
-              'Bắt đầu viết nội dung bài viết hoặc dán (Ctrl+V) nội dung từ ChatGPT, Word, Google Docs vào đây...'
-            }
-            className="w-full max-w-4xl bg-white shadow-sm border border-slate-200/80 rounded-xl p-8 sm:p-12 min-h-[500px] outline-none article-body prose prose-slate focus:ring-2 focus:ring-indigo-500/20 text-slate-800 transition leading-relaxed empty:before:content-[attr(data-placeholder)] empty:before:text-slate-400 empty:before:italic empty:before:pointer-events-none"
-            spellCheck={true}
-          />
-        )}
+        {/* Mode 1: Visual Word-Like Document Canvas - NEVER UNMOUNT TO PREVENT DATA LOSS */}
+        <div
+          ref={editorRef}
+          contentEditable
+          onInput={notifyChange}
+          onKeyUp={notifyChange}
+          onPaste={handlePaste}
+          onKeyDown={handleKeyDown}
+          data-placeholder={
+            placeholder ||
+            'Bắt đầu viết nội dung bài viết hoặc dán (Ctrl+V) nội dung từ ChatGPT, Word, Google Docs vào đây...'
+          }
+          className={`w-full max-w-4xl bg-white shadow-sm border border-slate-200/80 rounded-xl p-8 sm:p-12 min-h-[500px] outline-none article-body prose prose-slate focus:ring-2 focus:ring-indigo-500/20 text-slate-800 transition leading-relaxed empty:before:content-[attr(data-placeholder)] empty:before:text-slate-400 empty:before:italic empty:before:pointer-events-none ${
+            viewMode === 'visual' ? 'block' : 'hidden'
+          }`}
+          spellCheck={true}
+        />
 
-        {/* Mode 2: Raw HTML Textarea (For advanced users) */}
-        {viewMode === 'html' && (
-          <div className="w-full max-w-4xl bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
-            <div className="bg-slate-800 text-slate-300 px-4 py-2 text-xs flex items-center justify-between border-b border-slate-700">
-              <span className="font-mono">Mã nguồn HTML bài viết (Chỉnh sửa trực tiếp)</span>
-              <span className="text-slate-400">Tự động đồng bộ với giao diện Word</span>
-            </div>
-            <textarea
-              ref={textareaRef}
-              value={value}
-              onChange={(e) => {
-                onChange(e.target.value);
-                if (editorRef.current) {
-                  editorRef.current.innerHTML = e.target.value;
-                }
-              }}
-              placeholder="Nhập hoặc dán mã HTML tại đây..."
-              className="w-full min-h-[500px] p-6 font-mono text-xs sm:text-sm text-slate-800 bg-white focus:outline-none resize-y leading-relaxed"
-              spellCheck={false}
-            />
+        {/* Mode 2: Raw HTML Textarea (For advanced users) - NEVER UNMOUNT */}
+        <div
+          className={`w-full max-w-4xl bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden ${
+            viewMode === 'html' ? 'block' : 'hidden'
+          }`}
+        >
+          <div className="bg-slate-800 text-slate-300 px-4 py-2 text-xs flex items-center justify-between border-b border-slate-700">
+            <span className="font-mono">Mã nguồn HTML bài viết (Chỉnh sửa trực tiếp)</span>
+            <span className="text-slate-400">Tự động đồng bộ với giao diện Word</span>
           </div>
-        )}
+          <textarea
+            ref={textareaRef}
+            defaultValue={value}
+            onChange={(e) => {
+              const val = e.target.value;
+              lastEmittedValue.current = val;
+              onChange(val);
+              setPreviewHtml(val);
+              if (editorRef.current) {
+                editorRef.current.innerHTML = val;
+              }
+            }}
+            placeholder="Nhập hoặc dán mã HTML tại đây..."
+            className="w-full min-h-[500px] p-6 font-mono text-xs sm:text-sm text-slate-800 bg-white focus:outline-none resize-y leading-relaxed"
+            spellCheck={false}
+          />
+        </div>
 
         {/* Mode 3: Live Preview on Site */}
-        {viewMode === 'preview' && (
-          <div className="w-full max-w-4xl bg-white shadow-sm border border-slate-200 rounded-xl p-8 sm:p-12 min-h-[500px]">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-6 pb-2 border-b border-slate-200 flex items-center justify-between">
-              <span>Bản xem trước giao diện hiển thị cho người đọc</span>
-              <span className="text-emerald-600 font-semibold">Live Preview</span>
-            </div>
-            <div
-              className="article-body prose prose-slate max-w-none text-slate-800"
-              dangerouslySetInnerHTML={{
-                __html: sanitizeHtmlContent(
-                  value || '<p class="text-slate-400 italic">Chưa có nội dung bài viết...</p>'
-                ),
-              }}
-            />
+        <div
+          className={`w-full max-w-4xl bg-white shadow-sm border border-slate-200 rounded-xl p-8 sm:p-12 min-h-[500px] ${
+            viewMode === 'preview' ? 'block' : 'hidden'
+          }`}
+        >
+          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-6 pb-2 border-b border-slate-200 flex items-center justify-between">
+            <span>Bản xem trước giao diện hiển thị cho người đọc</span>
+            <span className="text-emerald-600 font-semibold">Live Preview</span>
           </div>
-        )}
+          <div
+            className="article-body prose prose-slate max-w-none text-slate-800"
+            dangerouslySetInnerHTML={{
+              __html: sanitizeHtmlContent(
+                previewHtml || value || '<p class="text-slate-400 italic">Chưa có nội dung bài viết...</p>'
+              ),
+            }}
+          />
+        </div>
       </div>
 
       {/* Bottom Status Bar */}
