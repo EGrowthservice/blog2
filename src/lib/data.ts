@@ -27,8 +27,8 @@ export async function getSiteSettings(): Promise<ISetting> {
       linkedin: 'https://linkedin.com/company/cinenovamedia',
     },
     gaId: process.env.NEXT_PUBLIC_GA_ID || '',
-    adsenseClient: process.env.NEXT_PUBLIC_ADSENSE_CLIENT || '',
-    customHeaderScripts: '',
+    adsenseClient: process.env.NEXT_PUBLIC_ADSENSE_CLIENT || 'ca-pub-4714090083774338',
+    customHeaderScripts: '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4714090083774338" crossorigin="anonymous"></script>',
   };
 
   try {

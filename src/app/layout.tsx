@@ -80,7 +80,7 @@ export default async function RootLayout({
         <CustomHeaderScripts code={settings.customHeaderScripts} />
       </head>
       <body className="min-h-screen bg-slate-50 text-slate-900 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
-        {adsenseClient && (
+        {adsenseClient && !settings.customHeaderScripts?.includes('adsbygoogle.js') && (
           <Script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`}
