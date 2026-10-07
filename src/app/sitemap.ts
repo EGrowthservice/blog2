@@ -2,7 +2,6 @@ import { MetadataRoute } from 'next';
 import connectDB from '@/lib/mongodb';
 import Post from '@/models/Post';
 import Category from '@/models/Category';
-import Tag from '@/models/Tag';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl =
@@ -53,10 +52,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const conn = await connectDB();
     if (!conn) return staticRoutes;
 
-    const [posts, categories, tags] = await Promise.all([
+    const [posts, categories] = await Promise.all([
       Post.find({ status: 'published' }).select('slug updatedAt publishedAt').lean(),
       Category.find({ isActive: true }).select('slug updatedAt').lean(),
-      Tag.find().select('slug updatedAt').lean(),
     ]);
 
     const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
@@ -73,14 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }));
 
-    const tagRoutes: MetadataRoute.Sitemap = tags.map((t) => ({
-      url: `${siteUrl}/tag/${t.slug}`,
-      lastModified: t.updatedAt || new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.6,
-    }));
-
-    return [...staticRoutes, ...postRoutes, ...categoryRoutes, ...tagRoutes];
+    return [...staticRoutes, ...postRoutes, ...categoryRoutes];
   } catch (e) {
     console.warn('Error generating dynamic sitemap:', e);
     return staticRoutes;

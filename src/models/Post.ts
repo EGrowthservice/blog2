@@ -7,7 +7,7 @@ export interface IPostDocument extends mongoose.Document {
   content: string;
   featuredImage: string;
   category: mongoose.Types.ObjectId;
-  tags: mongoose.Types.ObjectId[];
+  tags?: mongoose.Types.ObjectId[];
   author: {
     _id?: mongoose.Types.ObjectId;
     name: string;
@@ -61,13 +61,7 @@ const PostSchema = new Schema<IPostDocument>(
       required: [true, 'Category is required'],
       index: true,
     },
-    tags: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Tag',
-        index: true,
-      },
-    ],
+    tags: [{ type: Schema.Types.ObjectId }],
     author: {
       _id: { type: Schema.Types.ObjectId, ref: 'User' },
       name: { type: String, default: 'Editorial Team' },
@@ -125,7 +119,6 @@ const PostSchema = new Schema<IPostDocument>(
 PostSchema.index({ status: 1, publishedAt: -1 });
 PostSchema.index({ status: 1, isFeatured: 1, publishedAt: -1 });
 PostSchema.index({ category: 1, status: 1, publishedAt: -1 });
-PostSchema.index({ tags: 1, status: 1, publishedAt: -1 });
 PostSchema.index({ status: 1, views: -1 });
 
 // Full text search index

@@ -1,11 +1,14 @@
 import connectDB from './mongodb';
 import Setting from '@/models/Setting';
 import Category from '@/models/Category';
+import User from '@/models/User';
 import Advertisement from '@/models/Advertisement';
 import Post from '@/models/Post';
 import { ISetting, ICategory, IAdvertisement, IPost, AdPosition } from '@/types';
 
 export const revalidate = 60; // 60s ISR revalidation cache
+
+const CARD_ARTICLE_FIELDS = 'title slug excerpt featuredImage category publishedAt createdAt views readingTime isFeatured';
 
 export async function getSiteSettings(): Promise<ISetting> {
   const defaultSettings: ISetting = {
@@ -25,6 +28,7 @@ export async function getSiteSettings(): Promise<ISetting> {
     },
     gaId: process.env.NEXT_PUBLIC_GA_ID || '',
     adsenseClient: process.env.NEXT_PUBLIC_ADSENSE_CLIENT || '',
+    customHeaderScripts: '',
   };
 
   try {
@@ -76,17 +80,21 @@ export async function getHomepageArticles(): Promise<{
     const conn = await connectDB();
     if (!conn) return { featuredPost: null, latestPosts: [], popularPosts: [] };
 
+    // Select only card fields - omit heavy HTML content for fast TTFB & minimal data payload
     const [featuredPostDoc, latestPostDocs, popularPostDocs] = await Promise.all([
       Post.findOne({ status: 'published', isFeatured: true })
+        .select(CARD_ARTICLE_FIELDS)
         .populate('category', 'name slug')
         .sort({ publishedAt: -1 })
         .lean(),
       Post.find({ status: 'published' })
+        .select(CARD_ARTICLE_FIELDS)
         .populate('category', 'name slug')
         .sort({ publishedAt: -1 })
         .limit(9)
         .lean(),
       Post.find({ status: 'published' })
+        .select(CARD_ARTICLE_FIELDS)
         .populate('category', 'name slug')
         .sort({ views: -1, publishedAt: -1 })
         .limit(5)
@@ -121,22 +129,35 @@ export async function getArticleBySlug(slug: string): Promise<{
     const conn = await connectDB();
     if (!conn) return { post: null, relatedPosts: [], sidebarPosts: [], prevPost: null, nextPost: null };
 
-    const postDoc = await Post.findOne({ slug, status: 'published' })
+    const decodedSlug = decodeURIComponent(slug).trim().toLowerCase();
+    const cleanSlug = slug.trim().toLowerCase();
+    const escapedSlug = decodedSlug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    // Resilient lookup: exact, decoded, trimmed, or case-insensitive regex
+    const postDoc = await Post.findOne({
+      $or: [
+        { slug: decodedSlug },
+        { slug: cleanSlug },
+        { slug },
+        { slug: { $regex: new RegExp(`^${escapedSlug}$`, 'i') } },
+      ],
+      status: 'published',
+    })
       .populate('category')
-      .populate('tags')
       .lean();
 
     if (!postDoc) return { post: null, relatedPosts: [], sidebarPosts: [], prevPost: null, nextPost: null };
 
     const post = JSON.parse(JSON.stringify(postDoc));
 
-    // Get related posts from same category
+    // Get related posts from same category - select only card fields (omit heavy content)
     const categoryId = typeof post.category === 'object' && post.category ? post.category._id : post.category;
     let relatedDocs = await Post.find({
       category: categoryId,
       _id: { $ne: post._id },
       status: 'published',
     })
+      .select(CARD_ARTICLE_FIELDS)
       .populate('category', 'name slug')
       .sort({ publishedAt: -1 })
       .limit(8)
@@ -149,6 +170,7 @@ export async function getArticleBySlug(slug: string): Promise<{
         _id: { $nin: existingIds },
         status: 'published',
       })
+        .select(CARD_ARTICLE_FIELDS)
         .populate('category', 'name slug')
         .sort({ publishedAt: -1 })
         .limit(8 - relatedDocs.length)
@@ -161,17 +183,18 @@ export async function getArticleBySlug(slug: string): Promise<{
     const bottomPosts = allRelated.length > 5 ? allRelated.slice(5, 9) : allRelated.slice(0, 3);
 
     // Get previous and next articles
+    const postDate = post.publishedAt || post.createdAt || new Date();
     const [prevDoc, nextDoc] = await Promise.all([
       Post.findOne({
         status: 'published',
-        publishedAt: { $lt: post.publishedAt || post.createdAt },
+        publishedAt: { $lt: postDate },
       })
         .select('title slug')
         .sort({ publishedAt: -1 })
         .lean(),
       Post.findOne({
         status: 'published',
-        publishedAt: { $gt: post.publishedAt || post.createdAt },
+        publishedAt: { $gt: postDate },
       })
         .select('title slug')
         .sort({ publishedAt: 1 })

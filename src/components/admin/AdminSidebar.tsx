@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   FileText,
   FolderTree,
-  Tags,
   Megaphone,
   BarChart3,
   Settings,
@@ -47,7 +46,6 @@ export default function AdminSidebar() {
       items: [
         { name: 'Bài viết', href: '/admin/articles', icon: FileText },
         { name: 'Danh mục', href: '/admin/categories', icon: FolderTree },
-        { name: 'Thẻ (Tags)', href: '/admin/tags', icon: Tags },
         { name: 'Bình luận & Báo cáo', href: '/admin/comments', icon: MessageSquare },
       ],
     },

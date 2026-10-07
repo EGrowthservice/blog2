@@ -21,6 +21,7 @@ export interface ISettingDocument extends mongoose.Document {
   };
   gaId?: string;
   adsenseClient?: string;
+  customHeaderScripts?: string;
   notifyNewComment?: boolean;
   notifyNewReport?: boolean;
   adminNotificationEmail?: string;
@@ -95,6 +96,10 @@ const SettingSchema = new Schema<ISettingDocument>(
       type: String,
       default: '',
       trim: true,
+    },
+    customHeaderScripts: {
+      type: String,
+      default: '',
     },
     notifyNewComment: {
       type: Boolean,

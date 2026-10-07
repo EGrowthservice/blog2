@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Post from '@/models/Post';
 import Category from '@/models/Category';
-import Tag from '@/models/Tag';
 import Advertisement from '@/models/Advertisement';
 import Setting from '@/models/Setting';
 import { requireAuth } from '@/lib/api-auth';
@@ -20,7 +19,6 @@ export async function GET(req: NextRequest) {
         draftArticles: 0,
         scheduledArticles: 0,
         totalCategories: 0,
-        totalTags: 0,
         totalViews: 0,
         popularArticles: [],
         recentArticles: [],
@@ -36,7 +34,6 @@ export async function GET(req: NextRequest) {
       draftArticles,
       scheduledArticles,
       totalCategories,
-      totalTags,
       activeAdsCount,
       settings,
       popularArticles,
@@ -48,7 +45,6 @@ export async function GET(req: NextRequest) {
       Post.countDocuments({ status: 'draft' }),
       Post.countDocuments({ status: 'scheduled' }),
       Category.countDocuments(),
-      Tag.countDocuments(),
       Advertisement.countDocuments({ isActive: true }),
       Setting.findOne({ key: 'global_settings' }).lean(),
       Post.find({ status: 'published' })
@@ -76,7 +72,6 @@ export async function GET(req: NextRequest) {
       draftArticles,
       scheduledArticles,
       totalCategories,
-      totalTags,
       totalViews,
       popularArticles,
       recentArticles,

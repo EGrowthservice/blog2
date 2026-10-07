@@ -7,6 +7,7 @@ import {
   AlertCircle,
   Globe,
   Search,
+  Code,
   Share2,
   BarChart3,
   Bell,
@@ -14,13 +15,14 @@ import {
   Mail,
   ShieldAlert,
   MessageSquare,
+  Sparkles,
 } from 'lucide-react';
 import AdminNavbar from '@/components/admin/AdminNavbar';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { ISetting } from '@/types';
 
 export default function AdminSettingsPage() {
-  const [activeTab, setActiveTab] = useState<'general' | 'seo' | 'social' | 'monetization' | 'notifications'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'seo' | 'scripts' | 'social' | 'monetization' | 'notifications'>('general');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +34,8 @@ export default function AdminSettingsPage() {
   const [favicon, setFavicon] = useState('');
   const [description, setDescription] = useState('');
   const [email, setEmail] = useState('qbinhtkcongviec@gmail.com');
+
+  const [customHeaderScripts, setCustomHeaderScripts] = useState('');
 
   const [defaultMetaTitle, setDefaultMetaTitle] = useState('');
   const [defaultMetaDescription, setDefaultMetaDescription] = useState('');
@@ -85,6 +89,7 @@ export default function AdminSettingsPage() {
 
           setGaId(s.gaId || '');
           setAdsenseClient(s.adsenseClient || '');
+          setCustomHeaderScripts(s.customHeaderScripts || '');
 
           setNotifyNewComment(s.notifyNewComment !== undefined ? s.notifyNewComment : true);
           setNotifyNewReport(s.notifyNewReport !== undefined ? s.notifyNewReport : true);
@@ -93,6 +98,14 @@ export default function AdminSettingsPage() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  const insertTemplate = (template: string) => {
+    if (!customHeaderScripts.trim()) {
+      setCustomHeaderScripts(template);
+    } else {
+      setCustomHeaderScripts((prev) => `${prev.trim()}\n\n${template}`);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,6 +126,7 @@ export default function AdminSettingsPage() {
       socialLinks,
       gaId,
       adsenseClient,
+      customHeaderScripts,
       notifyNewComment,
       notifyNewReport,
       adminNotificationEmail,
@@ -145,6 +159,7 @@ export default function AdminSettingsPage() {
   const tabs = [
     { id: 'general', label: 'Cài đặt chung & Logo', icon: Globe },
     { id: 'seo', label: 'Cấu hình SEO & Thẻ chia sẻ', icon: Search },
+    { id: 'scripts', label: 'Mã Header Đa Dụng (Scripts)', icon: Code },
     { id: 'social', label: 'Mạng xã hội', icon: Share2 },
     { id: 'monetization', label: 'Google Analytics & AdSense', icon: BarChart3 },
     { id: 'notifications', label: 'Thông báo & Cảnh báo', icon: Bell },
@@ -378,6 +393,173 @@ export default function AdminSettingsPage() {
                   <option value="summary_large_image">Ảnh lớn (summary_large_image)</option>
                   <option value="summary">Ảnh nhỏ (summary)</option>
                 </select>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: Custom Header Scripts */}
+          {activeTab === 'scripts' && (
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <Code className="w-4 h-4 text-indigo-600" />
+                      Mã Chèn Header Đa Dụng (Head Code Injection)
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Chèn các đoạn mã JavaScript, Google Analytics, Google Tag Manager, Meta Pixel hoặc thẻ meta xác minh bản quyền vào thẻ <code className="bg-slate-100 text-indigo-600 px-1 py-0.5 rounded font-mono text-[11px]">&lt;head&gt;</code> của mã nguồn website.
+                    </p>
+                  </div>
+
+                  {/* Real-time stats */}
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      {customHeaderScripts.trim()
+                        ? `${(customHeaderScripts.match(/<(script|meta|link|style)/gi) || []).length || 1} thẻ được phát hiện`
+                        : 'Chưa có mã'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Template Inserter */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Chèn Mẫu Mã Thường Dùng (Quick Insert)
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      insertTemplate(
+`<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-XXXXXXXXXX');
+</script>`
+                      )
+                    }
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-xl transition cursor-pointer border border-slate-200"
+                  >
+                    + Google Analytics 4
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      insertTemplate(
+`<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->`
+                      )
+                    }
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-xl transition cursor-pointer border border-slate-200"
+                  >
+                    + Google Tag Manager
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      insertTemplate(
+`<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', 'YOUR_PIXEL_ID');
+fbq('track', 'PageView');
+</script>`
+                      )
+                    }
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-xl transition cursor-pointer border border-slate-200"
+                  >
+                    + Meta Pixel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      insertTemplate(
+`<!-- Google Search Console Verification -->
+<meta name="google-site-verification" content="YOUR_VERIFICATION_TOKEN" />`
+                      )
+                    }
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-xl transition cursor-pointer border border-slate-200"
+                  >
+                    + Thẻ Xác Minh Search Console
+                  </button>
+
+                  {customHeaderScripts && (
+                    <button
+                      type="button"
+                      onClick={() => setCustomHeaderScripts('')}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-medium rounded-xl transition cursor-pointer border border-rose-200 ml-auto"
+                    >
+                      Xoá toàn bộ
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Code Textarea */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Mã Nguồn Chèn Vào Header (HTML / JavaScript)
+                  </label>
+                  <span className="text-[11px] font-mono text-slate-400">
+                    {customHeaderScripts.length} ký tự
+                  </span>
+                </div>
+
+                <div className="relative rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+                  <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800 text-slate-400 text-xs font-mono">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                      <span className="ml-2 text-slate-300 font-semibold">&lt;head&gt; custom code</span>
+                    </span>
+                    <span className="text-[10px] text-slate-500">HTML / JS / CSS</span>
+                  </div>
+
+                  <textarea
+                    value={customHeaderScripts}
+                    onChange={(e) => setCustomHeaderScripts(e.target.value)}
+                    rows={14}
+                    placeholder={`<!-- Dán đoạn mã script của bạn vào đây, ví dụ Google Analytics: -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>\n<script>\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n  gtag('config', 'G-XXXXXXXXXX');\n</script>`}
+                    className="w-full p-4 bg-slate-950 text-emerald-400 font-mono text-xs leading-relaxed focus:outline-none focus:ring-0 resize-y border-0 placeholder:text-slate-600 selection:bg-indigo-600 selection:text-white"
+                    spellCheck={false}
+                  />
+                </div>
+
+                <div className="p-3 bg-amber-50 border border-amber-200/80 rounded-xl text-amber-800 text-xs space-y-1">
+                  <p className="font-semibold flex items-center gap-1.5">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 text-amber-600" />
+                    Nguyên lý hoạt động và lưu ý an toàn:
+                  </p>
+                  <ul className="list-disc list-inside text-[11px] text-amber-700 space-y-0.5 ml-1">
+                    <li>Đoạn mã sẽ được nhúng trực tiếp vào thẻ <code className="font-mono font-bold">&lt;head&gt;</code> của mã nguồn trang (SSR), hiển thị khi xem Page Source và chạy ngay khi tải trang.</li>
+                    <li>Hỗ trợ đầy đủ thẻ <code className="font-mono">&lt;script&gt;</code>, <code className="font-mono">&lt;meta&gt;</code>, <code className="font-mono">&lt;link&gt;</code>, <code className="font-mono">&lt;style&gt;</code> hoặc mã JavaScript thuần.</li>
+                    <li>Đảm bảo các thẻ mở và đóng hợp lệ để tránh ảnh hưởng đến hiển thị giao diện.</li>
+                  </ul>
+                </div>
               </div>
             </div>
           )}

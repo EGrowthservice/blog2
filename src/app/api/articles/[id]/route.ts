@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectDB from '@/lib/mongodb';
 import Post from '@/models/Post';
+import Category from '@/models/Category';
 import { requireAuth } from '@/lib/api-auth';
 import { calculateReadingTime, slugify } from '@/lib/utils';
 import mongoose from 'mongoose';
@@ -15,11 +17,11 @@ export async function GET(
 
     let post;
     if (mongoose.Types.ObjectId.isValid(id)) {
-      post = await Post.findById(id).populate('category').populate('tags');
+      post = await Post.findById(id).populate('category');
     }
 
     if (!post) {
-      post = await Post.findOne({ slug: id }).populate('category').populate('tags');
+      post = await Post.findOne({ slug: id }).populate('category');
     }
 
     if (!post) {
@@ -58,7 +60,6 @@ export async function PUT(
       content,
       featuredImage,
       category,
-      tags,
       status,
       isFeatured,
       seoTitle,
@@ -75,7 +76,6 @@ export async function PUT(
     }
     if (featuredImage !== undefined) post.featuredImage = featuredImage;
     if (category) post.category = category;
-    if (tags !== undefined) post.tags = tags;
     if (isFeatured !== undefined) post.isFeatured = isFeatured;
     if (seoTitle !== undefined) post.seoTitle = seoTitle;
     if (seoDescription !== undefined) post.seoDescription = seoDescription;
@@ -103,6 +103,14 @@ export async function PUT(
 
     await post.save();
 
+    try {
+      revalidatePath('/');
+      revalidatePath('/articles');
+      revalidatePath(`/article/${post.slug}`);
+    } catch {
+      // Ignore background revalidation errors
+    }
+
     return NextResponse.json({ success: true, post });
   } catch (error: unknown) {
     const err = error as Error;
@@ -125,6 +133,14 @@ export async function DELETE(
     const post = await Post.findByIdAndDelete(id);
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+
+    try {
+      revalidatePath('/');
+      revalidatePath('/articles');
+      if (post.slug) revalidatePath(`/article/${post.slug}`);
+    } catch {
+      // Ignore background revalidation errors
     }
 
     return NextResponse.json({ success: true, message: 'Article deleted successfully.' });

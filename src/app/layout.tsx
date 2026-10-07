@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
+import CustomHeaderScripts from '@/components/layout/CustomHeaderScripts';
 import { getSiteSettings } from '@/lib/data';
 import './globals.css';
 
@@ -75,6 +76,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <CustomHeaderScripts code={settings.customHeaderScripts} />
+      </head>
       <body className="min-h-screen bg-slate-50 text-slate-900 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
         {adsenseClient && (
           <Script

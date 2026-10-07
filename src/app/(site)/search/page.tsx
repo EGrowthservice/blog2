@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Search as SearchIcon, ArrowRight, Frown } from 'lucide-react';
 import connectDB from '@/lib/mongodb';
 import Post from '@/models/Post';
+import Category from '@/models/Category';
 import ArticleCard from '@/components/articles/ArticleCard';
 import { IPost } from '@/types';
 
@@ -46,6 +47,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       const [docs, count] = await Promise.all([
         Post.find(searchFilter)
+          .select('title slug excerpt featuredImage category publishedAt createdAt views readingTime')
           .populate('category', 'name slug')
           .sort({ publishedAt: -1 })
           .skip(skip)

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectDB from '@/lib/mongodb';
 import Setting from '@/models/Setting';
 import { requireAuth } from '@/lib/api-auth';
@@ -24,6 +25,7 @@ const DEFAULT_SETTINGS = {
   },
   gaId: process.env.NEXT_PUBLIC_GA_ID || '',
   adsenseClient: process.env.NEXT_PUBLIC_ADSENSE_CLIENT || '',
+  customHeaderScripts: '',
   notifyNewComment: true,
   notifyNewReport: true,
   adminNotificationEmail: 'qbinhtkcongviec@gmail.com',
@@ -62,6 +64,12 @@ export async function PUT(req: NextRequest) {
       { $set: body },
       { new: true, upsert: true }
     );
+
+    try {
+      revalidatePath('/', 'layout');
+    } catch {
+      // Ignore background revalidation error
+    }
 
     return NextResponse.json({ success: true, settings: updated });
   } catch (error: unknown) {

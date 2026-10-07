@@ -10,17 +10,28 @@ import { getSiteSettings } from '@/lib/data';
 import { getBreadcrumbJsonLd } from '@/lib/seo';
 import { ICategory, IPost } from '@/types';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ page?: string }>;
 }
 
+function getCategorySlugCandidates(rawSlug: string): string[] {
+  const normalized = decodeURIComponent(rawSlug).trim().toLowerCase();
+  const singular = normalized.endsWith('s') ? normalized.slice(0, -1) : normalized;
+  const plural = normalized + 's';
+  return Array.from(new Set([normalized, singular, plural, rawSlug.trim()]));
+}
+
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
   await connectDB();
-  const category = await Category.findOne({ slug, isActive: { $ne: false } }).lean();
+  const slugCandidates = getCategorySlugCandidates(slug);
+  const category = await Category.findOne({
+    slug: { $in: slugCandidates },
+    isActive: { $ne: false },
+  }).lean();
 
   if (!category) {
     return { title: 'Category Not Found' };
@@ -52,8 +63,12 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const limit = 12;
 
   await connectDB();
+  const slugCandidates = getCategorySlugCandidates(slug);
   const [categoryDoc, settings] = await Promise.all([
-    Category.findOne({ slug, isActive: { $ne: false } }).lean(),
+    Category.findOne({
+      slug: { $in: slugCandidates },
+      isActive: { $ne: false },
+    }).lean(),
     getSiteSettings(),
   ]);
 
@@ -66,6 +81,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const skip = (page - 1) * limit;
   const [postDocs, totalPosts] = await Promise.all([
     Post.find({ category: category._id, status: 'published' })
+      .select('title slug excerpt featuredImage category publishedAt createdAt views readingTime')
       .populate('category', 'name slug')
       .sort({ publishedAt: -1 })
       .skip(skip)

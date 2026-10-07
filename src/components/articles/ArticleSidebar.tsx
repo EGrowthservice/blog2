@@ -61,6 +61,7 @@ export default function ArticleSidebar({
                         src={post.featuredImage}
                         alt={post.title}
                         fill
+                        quality={75}
                         sizes="80px"
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />

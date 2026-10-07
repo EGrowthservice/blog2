@@ -3,11 +3,12 @@ import type { Metadata } from 'next';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import connectDB from '@/lib/mongodb';
 import Post from '@/models/Post';
+import Category from '@/models/Category';
 import ArticleCard from '@/components/articles/ArticleCard';
 import { getSiteSettings } from '@/lib/data';
 import { IPost } from '@/types';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 interface ArticlesPageProps {
   searchParams: Promise<{ page?: string }>;
@@ -31,6 +32,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
 
   const [postDocs, totalPosts] = await Promise.all([
     Post.find({ status: 'published' })
+      .select('title slug excerpt featuredImage category publishedAt createdAt views readingTime')
       .populate('category', 'name slug')
       .sort({ publishedAt: -1, createdAt: -1 })
       .skip(skip)

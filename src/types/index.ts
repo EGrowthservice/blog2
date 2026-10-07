@@ -24,15 +24,6 @@ export interface ICategory {
   updatedAt: string;
 }
 
-export interface ITag {
-  _id: string;
-  name: string;
-  slug: string;
-  articleCount?: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export type PostStatus = 'draft' | 'published' | 'scheduled' | 'archived';
 
 export interface IPost {
@@ -43,7 +34,6 @@ export interface IPost {
   content: string;
   featuredImage: string;
   category: ICategory | string;
-  tags: (ITag | string)[];
   author: {
     _id?: string;
     name: string;
@@ -113,6 +103,7 @@ export interface ISetting {
   socialLinks: ISocialLinks;
   gaId?: string;
   adsenseClient?: string;
+  customHeaderScripts?: string;
   notifyNewComment?: boolean;
   notifyNewReport?: boolean;
   adminNotificationEmail?: string;
@@ -126,7 +117,6 @@ export interface AdminStats {
   draftArticles: number;
   scheduledArticles: number;
   totalCategories: number;
-  totalTags: number;
   totalViews: number;
   popularArticles: IPost[];
   recentArticles: IPost[];

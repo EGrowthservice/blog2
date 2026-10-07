@@ -8,19 +8,17 @@ import {
   Save,
   CheckCircle,
   AlertCircle,
-  Plus,
 } from 'lucide-react';
 import AdminNavbar from '@/components/admin/AdminNavbar';
 import RichEditor from '@/components/admin/RichEditor';
 import ImageUpload from '@/components/admin/ImageUpload';
-import { ICategory, ITag } from '@/types';
+import { ICategory } from '@/types';
 import { slugify } from '@/lib/utils';
 
 export default function CreateArticlePage() {
   const router = useRouter();
 
   const [categories, setCategories] = useState<ICategory[]>([]);
-  const [availableTags, setAvailableTags] = useState<ITag[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,8 +30,6 @@ export default function CreateArticlePage() {
   const [content, setContent] = useState('');
   const [featuredImage, setFeaturedImage] = useState('');
   const [category, setCategory] = useState('');
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
-  const [newTagInput, setNewTagInput] = useState('');
   const [status, setStatus] = useState<'draft' | 'published' | 'scheduled' | 'archived'>('draft');
   const [isFeatured, setIsFeatured] = useState(false);
 
@@ -43,21 +39,17 @@ export default function CreateArticlePage() {
   const [seoKeywords, setSeoKeywords] = useState('');
 
   useEffect(() => {
-    // Fetch categories and tags
-    Promise.all([
-      fetch('/api/categories?all=true').then((res) => (res.ok ? res.json() : null)),
-      fetch('/api/tags').then((res) => (res.ok ? res.json() : null)),
-    ]).then(([catData, tagData]) => {
-      if (catData?.categories) {
-        setCategories(catData.categories);
-        if (catData.categories.length > 0) {
-          setCategory(catData.categories[0]._id);
+    // Fetch categories
+    fetch('/api/categories?all=true')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((catData) => {
+        if (catData?.categories) {
+          setCategories(catData.categories);
+          if (catData.categories.length > 0) {
+            setCategory(catData.categories[0]._id);
+          }
         }
-      }
-      if (tagData?.tags) {
-        setAvailableTags(tagData.tags);
-      }
-    });
+      });
   }, []);
 
   const handleTitleChange = (val: string) => {
@@ -67,27 +59,6 @@ export default function CreateArticlePage() {
     }
     if (!seoTitle) {
       setSeoTitle(val);
-    }
-  };
-
-  const handleAddTag = async () => {
-    if (!newTagInput.trim()) return;
-    try {
-      const res = await fetch('/api/tags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newTagInput.trim() }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.tag) {
-          setAvailableTags([...availableTags, data.tag]);
-          setSelectedTagIds([...selectedTagIds, data.tag._id]);
-          setNewTagInput('');
-        }
-      }
-    } catch (e) {
-      console.error('Lỗi khi tạo thẻ:', e);
     }
   };
 
@@ -121,7 +92,6 @@ export default function CreateArticlePage() {
         content,
         featuredImage,
         category,
-        tags: selectedTagIds,
         status: postStatus,
         isFeatured,
         seoTitle: seoTitle || title,
@@ -409,62 +379,6 @@ export default function CreateArticlePage() {
                 aspectHint="Ảnh chất lượng cao, định dạng JPG, PNG, WEBP tỷ lệ 16:9"
                 placeholder="https://... hoặc tải ảnh từ máy tính"
               />
-            </div>
-
-            {/* Tags Box */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
-              <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
-                Thẻ Bài Viết (Tags)
-              </h3>
-
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newTagInput}
-                  onChange={(e) => setNewTagInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddTag();
-                    }
-                  }}
-                  placeholder="Thêm thẻ mới..."
-                  className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddTag}
-                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-1.5 pt-2 max-h-48 overflow-y-auto">
-                {availableTags.map((tg) => {
-                  const isSelected = selectedTagIds.includes(tg._id);
-                  return (
-                    <button
-                      key={tg._id}
-                      type="button"
-                      onClick={() => {
-                        if (isSelected) {
-                          setSelectedTagIds(selectedTagIds.filter((id) => id !== tg._id));
-                        } else {
-                          setSelectedTagIds([...selectedTagIds, tg._id]);
-                        }
-                      }}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
-                        isSelected
-                          ? 'bg-indigo-600 text-white shadow-xs'
-                          : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                      }`}
-                    >
-                      #{tg.name}
-                    </button>
-                  );
-                })}
-              </div>
             </div>
           </div>
         </div>

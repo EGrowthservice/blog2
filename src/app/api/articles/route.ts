@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectDB from '@/lib/mongodb';
 import Post from '@/models/Post';
 import Category from '@/models/Category';
-import Tag from '@/models/Tag';
 import { requireAuth } from '@/lib/api-auth';
 import { calculateReadingTime, slugify } from '@/lib/utils';
 import mongoose from 'mongoose';
@@ -19,52 +19,28 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10', 10);
     const status = searchParams.get('status');
     const categoryParam = searchParams.get('category');
-    const tagParam = searchParams.get('tag');
     const search = searchParams.get('search');
+    const sort = searchParams.get('sort');
     const isFeatured = searchParams.get('isFeatured');
-    const sort = searchParams.get('sort') || 'latest';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: Record<string, any> = {};
 
-    // Filter by status (public view only sees published articles unless status=all or specific status)
     if (status && status !== 'all') {
       filter.status = status;
-    } else if (status === 'all') {
-      // Do not filter by status -> return all posts (published, draft, scheduled, archived)
-    } else {
-      filter.status = 'published';
     }
 
-    // Filter by featured
     if (isFeatured === 'true') {
       filter.isFeatured = true;
     }
 
-    // Filter by category slug or ID
-    if (categoryParam) {
+    if (categoryParam && categoryParam !== 'all') {
       if (mongoose.Types.ObjectId.isValid(categoryParam)) {
         filter.category = categoryParam;
       } else {
         const cat = await Category.findOne({ slug: categoryParam });
         if (cat) {
           filter.category = cat._id;
-        } else {
-          return NextResponse.json({ posts: [], total: 0, totalPages: 0, page });
-        }
-      }
-    }
-
-    // Filter by tag slug or ID
-    if (tagParam) {
-      if (mongoose.Types.ObjectId.isValid(tagParam)) {
-        filter.tags = tagParam;
-      } else {
-        const tg = await Tag.findOne({ slug: tagParam });
-        if (tg) {
-          filter.tags = tg._id;
-        } else {
-          return NextResponse.json({ posts: [], total: 0, totalPages: 0, page });
         }
       }
     }
@@ -91,8 +67,8 @@ export async function GET(req: NextRequest) {
 
     const [posts, total] = await Promise.all([
       Post.find(filter)
+        .select('title slug excerpt featuredImage category status isFeatured publishedAt createdAt views readingTime author')
         .populate('category', 'name slug')
-        .populate('tags', 'name slug')
         .sort(sortQuery)
         .skip(skip)
         .limit(limit)
@@ -134,7 +110,6 @@ export async function POST(req: NextRequest) {
       content,
       featuredImage,
       category,
-      tags,
       status = 'draft',
       isFeatured = false,
       seoTitle,
@@ -168,7 +143,7 @@ export async function POST(req: NextRequest) {
       content,
       featuredImage: featuredImage || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&h=630&q=80',
       category,
-      tags: Array.isArray(tags) ? tags : [],
+      tags: [],
       author: {
         _id: session?.userId,
         name: session?.name || 'Spotlight Editorial Desk',
@@ -183,6 +158,14 @@ export async function POST(req: NextRequest) {
       seoKeywords: Array.isArray(seoKeywords) ? seoKeywords : [],
       publishedAt: status === 'published' ? new Date() : null,
     });
+
+    try {
+      revalidatePath('/');
+      revalidatePath('/articles');
+      revalidatePath(`/article/${newPost.slug}`);
+    } catch {
+      // Ignore background revalidation errors
+    }
 
     return NextResponse.json({ success: true, post: newPost }, { status: 201 });
   } catch (error: unknown) {

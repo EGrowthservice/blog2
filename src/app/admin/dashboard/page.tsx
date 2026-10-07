@@ -99,11 +99,11 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Card 3: Categories & Tags */}
+          {/* Card 3: Categories */}
           <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                Chuyên mục & Thẻ
+                Chuyên mục
               </span>
               <div className="w-8 h-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
                 <FolderTree className="w-4 h-4" />
@@ -113,7 +113,7 @@ export default function AdminDashboardPage() {
               {loading ? '-' : stats?.totalCategories || 0}
             </div>
             <div className="text-xs text-slate-500">
-              {stats?.totalTags || 0} thẻ tags đang hoạt động
+              Danh mục bài viết đang hoạt động
             </div>
           </div>
 

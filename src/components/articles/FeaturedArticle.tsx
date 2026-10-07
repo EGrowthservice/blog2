@@ -82,6 +82,7 @@ export default function FeaturedArticle({ post }: FeaturedArticleProps) {
               alt={post.title}
               fill
               priority
+              quality={75}
               sizes="(max-width: 1024px) 100vw, 45vw"
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />

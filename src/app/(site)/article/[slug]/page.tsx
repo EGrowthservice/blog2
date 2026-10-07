@@ -4,16 +4,16 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { Calendar, Clock, Eye, ArrowLeft } from 'lucide-react';
 import { getArticleBySlug, getSiteSettings, getActiveCategories } from '@/lib/data';
-import { formatDate, formatNumber, sanitizeHtmlContent } from '@/lib/utils';
+import { formatDate, formatNumber, optimizeHtmlContent } from '@/lib/utils';
 import { getArticleJsonLd, getBreadcrumbJsonLd } from '@/lib/seo';
 import SocialShare from '@/components/articles/SocialShare';
 import RelatedArticles from '@/components/articles/RelatedArticles';
 import ArticleSidebar from '@/components/articles/ArticleSidebar';
 import ViewCounter from '@/components/articles/ViewCounter';
 import CommentSection from '@/components/articles/CommentSection';
-import { ICategory, ITag } from '@/types';
+import { ICategory } from '@/types';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -80,7 +80,6 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   const category =
     typeof post.category === 'object' && post.category ? (post.category as ICategory) : null;
-  const tags = Array.isArray(post.tags) ? (post.tags as ITag[]) : [];
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const articleUrl = `${siteUrl}/article/${post.slug}`;
@@ -96,7 +95,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     siteUrl
   );
 
-  const sanitizedContent = sanitizeHtmlContent(post.content);
+  const sanitizedContent = optimizeHtmlContent(post.content);
 
   return (
     <>
@@ -178,6 +177,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   alt={post.title}
                   fill
                   priority
+                  quality={75}
                   sizes="(max-width: 1024px) 100vw, 850px"
                   className="object-cover"
                 />
@@ -189,27 +189,6 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               className="article-body prose prose-slate max-w-none mb-10 text-slate-800"
               dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             />
-
-            {/* Tags */}
-            {tags.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 pt-6 border-t border-slate-200 mb-8">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">
-                  Tagged with:
-                </span>
-                {tags.map((tg) => {
-                  const tagObj = typeof tg === 'object' ? tg : { name: tg, slug: tg };
-                  return (
-                    <Link
-                      key={tagObj.slug}
-                      href={`/tag/${tagObj.slug}`}
-                      className="px-3 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium hover:bg-indigo-50 hover:text-indigo-600 transition"
-                    >
-                      #{tagObj.name}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
 
             {/* Social Sharing */}
             <SocialShare url={articleUrl} title={post.title} />
